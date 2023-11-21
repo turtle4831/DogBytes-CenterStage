@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name="Auto Pre-Positioning test")
 public class AutoPrePositioning extends LinearOpMode {
-    static String direction;
+
     public DcMotor FL_Motor;
     public DcMotor FR_Motor;
     public DcMotor BR_Motor;
@@ -141,10 +141,10 @@ public class AutoPrePositioning extends LinearOpMode {
                 //call a sleep for 500 ms after every encoder drive function
                 while(true){//localization loop for board blue and audience red
                     while(Distance_Right.getDistance(DistanceUnit.INCH) > 5){ //makes the robot be in the correct right position
-                        int RightDistance = (int)Distance_Right.getDistance(DistanceUnit.INCH);
+                        int RightDistance = (int)Distance_Right.getDistance(DistanceUnit.INCH); //strafes to the right until its in the correct position
                         encoderDriveStrafe(RightDistance,-RightDistance,-RightDistance,RightDistance,1000);
                     }
-                    while(Distance_Back.getDistance(DistanceUnit.INCH) < 3){
+                    while(Distance_Back.getDistance(DistanceUnit.INCH) < 3){ //goes forwards until the distance is less than 3 inches
                         int BackDistance = (int) Distance_Back.getDistance(DistanceUnit.INCH);
                         encoderDrive(1000,BackDistance,BackDistance);
                     }
@@ -161,7 +161,6 @@ public class AutoPrePositioning extends LinearOpMode {
                 for (int motorLocation : motorLocations) {
                     telemetry.addData("Motor locations", motorLocation);
                 }
-                telemetry.addData("Which way the robot is going", direction);
                 telemetry.update();
 
             }
