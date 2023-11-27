@@ -128,21 +128,17 @@ public class visionEncoderAutoTest extends LinearOpMode {
                         this.height = recognition.getHeight();
                     }else if (currentRecognitions.size() <= 1 ){
                         goLeft = true;
-                    }else if(currentRecognitions.size() >= 2){
-                        foundObj = true;
-                        id = 2;
-                        telemetry.addData("Going middle", x);
                     }
 
 
                 }
 
                 //for blue board side
-                if (x >= 100 && x <= 200 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {//middle
+                if (x >= 100 && x <= 300 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {//middle
                     telemetry.addData("Going middle", x);
                     foundObj = true;
                     id = 2;
-                } else if (x >= 350 && x <= 420 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {// right
+                } else if (x >= 350 && x <= 450 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {// right
                     telemetry.addData("Going right", x);
                     foundObj = true;
                     id = 3;
@@ -156,9 +152,8 @@ public class visionEncoderAutoTest extends LinearOpMode {
                 if(foundObj){
                     Claw.setPosition(1);
                     sleep(500);
-                    encoderDrive(1000,100,100);
+                    encoderDrive(1000,800,800);
                     sleep(500);
-                    motorSleep();
                     L_Slide.setPower(0.3);
                     R_Slide.setPower(0.3);
                     sleep(3400);
@@ -168,13 +163,9 @@ public class visionEncoderAutoTest extends LinearOpMode {
                     Wrist.setPosition(0.45);
                     if(id == 1){
                         //code for left
-                        encoderDrive(2500,-250,250);
-                        sleep(500);
-                        motorSleep();
+                        encoderDrive(2500,-500,500);
                         sleep(1000);
-                        encoderDrive(2500,200,200);
-                        sleep(200);
-                        motorSleep();
+                        encoderDrive(2500,1000,1000);
                         sleep(500);
                         Claw.setPosition(0.85);
                         sleep(500);
@@ -182,28 +173,24 @@ public class visionEncoderAutoTest extends LinearOpMode {
                     }else if(id == 2 ){
                         //code for middle
                         encoderDrive(2500,260,260);
-                        sleep(200);
-                        motorSleep();
                         sleep(500);
                         Claw.setPosition(0.85);
                         sleep(500);
                         encoderDrive(1000,200,200);
                         sleep(500);
-                        motorSleep();
-                        sleep(500);
                         encoderDrive(1000,-500,500);
                         sleep(500);
-                        motorSleep();
                         sleep(500000);
                     }else if(id == 3){
                         //code for right
-                        encoderDrive(2500,-250,250);
+                        encoderDrive(2500,500,-500);
+                        sleep(1000);
+                        encoderDrive(2500,1000,1000);
                         sleep(500);
-                        motorSleep();
-                        sleep(1000);
+                        encoderDrive(1000,-1000,1000);
+                        sleep(500);
                         Claw.setPosition(0.85);
-                        sleep(1000);
-                        motorSleep();
+                        sleep(500);
                         sleep(500000);
                     }
                 }
@@ -379,6 +366,11 @@ public class visionEncoderAutoTest extends LinearOpMode {
                 FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
                 sleep(250);   // optional pause after each move.
                 ((DcMotorEx) FL_Motor).setVelocity(0);
