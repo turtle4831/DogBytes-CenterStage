@@ -1,87 +1,186 @@
 package org.firstinspires.ftc.teamcode;
-import android.annotation.SuppressLint;
-import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-@Autonomous(name = "AutoRedAudience")
+@Autonomous(name = "RedAudiencePurplePark")
 public class AutoRedAudience extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    @SuppressLint("SdCardPath")
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
-    // Define the labels recognized in the model for TFOD (must be in training order!)
-    private static final String[] LABELS = {
-            "RedTeam"
-    };
-    static String position;
+
+    /**
+     * The variable to store our instance of the AprilTag processor.
+     */
+    private AprilTagProcessor aprilTag;
+    double x;
+    double height;
+    double width;
+    boolean foundObj = false;
+    boolean goLeft = false;
+    public DcMotor FL_Motor;
+    public DcMotor FR_Motor;
+    public DcMotor BR_Motor;
+    public DcMotor BL_Motor;
+    public DcMotor L_Slide;
+    public DcMotor R_Slide;
+    public Servo Wrist;
+    public Servo Claw;
+
+    int id = 3;
+
 
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
+
     /**
      * The variable to store our instance of the vision portal.
      */
-    private VisionPortal visionPortal;
+    private VisionPortal myVisionPortal;
+  //  private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolRed.tflite"; // blue
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
+    private static final String[] LABELS = { //these must be in training order
+             "RedTeam"
+            //"BlueTeamObj"
+    };
+
+
     @Override
     public void runOpMode() {
+        FL_Motor = hardwareMap.get(DcMotor.class, "FL_Motor");
+        FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
+        BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
+        BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
+        L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
+        R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
 
-        initTfod();
+        Wrist = hardwareMap.get(Servo.class, "Wrist");
+        Claw = hardwareMap.get(Servo.class, "Claw");
 
-        // Wait for the DS start button to be touched.
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
-        telemetry.update();
+        //set the motor direction
+        FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+        //resets the encoders and starts them again cause i can
+        FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        initDoubleVision();
         waitForStart();
 
+        // This OpMode loops continuously, allowing the user to switch between
+        // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
-            List<Recognition> currentRecognitions = tfod.getRecognitions();
-            for (Recognition recognition : currentRecognitions) {
-                double x = (recognition.getLeft() + recognition.getRight()) / 2;
-                if (x < 260 && x > 240) {
-                    position = "Left";
-                    visionPortal.close();
-                } else if (x > 360 && x < 470) {
-                    position = "Middle";
-                    visionPortal.close();
-                }
-            }
-            while (opModeIsActive()) {
+            while (!isStopRequested() && opModeIsActive()) {
 
-                telemetryTfod();
+
                 // Push telemetry to the Driver Station.
-                telemetry.addData("OBJ position", position);
+                telemetry.update();
+                List<Recognition> currentRecognitions = tfod.getRecognitions();
+                for (Recognition recognition : currentRecognitions) {
+                    if(recognition.getWidth() < 200 && recognition.getHeight() < 200 ){
+                        this.x = (recognition.getLeft() + recognition.getRight()) / 2;
+                        this.width = recognition.getWidth();
+                        this.height = recognition.getHeight();
+                    }else if (currentRecognitions.size() <= 1 ){
+                        goLeft = true;
+                    }
+
+
+                }
+
+                //for blue board side
+                if (x >= 100 && x <= 300 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {//middle
+                    telemetry.addData("Going middle", x);
+                    foundObj = true;
+                    id = 2;
+                } else if (x >= 350 && x <= 450 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {// right
+                    telemetry.addData("Going right", x);
+                    foundObj = true;
+                    id = 3;
+                } else if(goLeft) {
+                    telemetry.addData("Going left", x);
+                    foundObj = true;
+                    id = 1;
+                }
                 telemetry.update();
 
+                if(foundObj){
+                    encoderDrive(2500,1000,1000);
+                    if(id == 1){
+                        //code for left
+                        encoderDrive(1000,-1000,1000);
+                        sleep(500);
+                        sleep(500000);
+                    }else if(id == 2 ){
+                        //code for middle
+                        encoderDrive(2500,1000,1000);
+                        sleep(500000);
+                    }else if(id == 3){
+                        //code for right
+                        encoderDrive(1000,1000,-1000);
+                        sleep(500);
+                        sleep(500000);
+                    }
+                }
 
-                // Save CPU resources; can resume streaming when needed.
 
-                  //  visionPortal.stopStreaming();
-                  //  visionPortal.resumeStreaming();
+                if (gamepad1.dpad_left) {
+                    myVisionPortal.setProcessorEnabled(aprilTag, false);
+                } else if (gamepad1.dpad_right) {
+                    myVisionPortal.setProcessorEnabled(aprilTag, true);
+                }
+                if (gamepad1.dpad_down) {
+                    myVisionPortal.setProcessorEnabled(tfod, false);
+                } else if (gamepad1.dpad_up) {
+                    myVisionPortal.setProcessorEnabled(tfod, true);
+                }
 
-                // Share the CPU.
                 sleep(20);
-            }
 
+            }   // end while loop
 
         }
-    }   // end runOpMode()
+    }// end method runOpMode()
+
 
     /**
-     * Initialize the TensorFlow Object Detection processor.
+     * Initialize AprilTag and TFOD.
      */
-    private void initTfod() {
+    private void initDoubleVision() {
+        // -----------------------------------------------------------------------------------------
+        // AprilTag Configuration
+        // -----------------------------------------------------------------------------------------
 
-        // Create the TensorFlow processor by using a builder.
+        aprilTag = new AprilTagProcessor.Builder()
+                .build();
+
+        // -----------------------------------------------------------------------------------------
+        // TFOD Configuration
+        // -----------------------------------------------------------------------------------------
+
         tfod = new TfodProcessor.Builder()
-
                 // With the following lines commented out, the default TfodProcessor Builder
                 // will load the default model for the season. To define a custom model to load,
                 // choose one of the following:
@@ -94,55 +193,55 @@ public class AutoRedAudience extends LinearOpMode {
                 // set parameters for custom models.
                 .setModelLabels(LABELS)
                 .setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
+                .setIsModelQuantized(true)
                 //.setModelInputSize(300)
                 .setModelAspectRatio(1.0)
 
                 .build();
 
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
+        // -----------------------------------------------------------------------------------------
+        // Camera Configuration
+        // -----------------------------------------------------------------------------------------
 
-        // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "camera1"));
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(hardwareMap.get(WebcamName.class, "camera1"))
+                    .addProcessors(tfod, aprilTag)
+                    .build();
         } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
+            myVisionPortal = new VisionPortal.Builder()
+                    .setCamera(BuiltinCameraDirection.BACK)
+                    .addProcessors(tfod, aprilTag)
+                    .build();
         }
+    }   // end initDoubleVision()
 
-        // Choose a camera resolution. Not all cameras support all resolutions.
-        builder.setCameraResolution(new  Size(640,480));
+    /**
+     * Add telemetry about AprilTag detections.
+     */
+    private void telemetryAprilTag() {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
 
-        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+            }
+        }   // end for() loop
 
-        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
-
-        // Set and enable the processor.
-        builder.addProcessor(tfod);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-        // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.75f);
-
-        // Disable or re-enable the TFOD processor at any time.
-        //visionPortal.setProcessorEnabled(tfod, true);
-
-    }   // end method initTfod()
+    }   // end method telemetryAprilTag()
 
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
-
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
@@ -158,6 +257,77 @@ public class AutoRedAudience extends LinearOpMode {
         }   // end for() loop
 
     }   // end method telemetryTfod()
+    public void motorSleep(){
+        FL_Motor.setTargetPosition(FL_Motor.getCurrentPosition());
+        FR_Motor.setTargetPosition(FR_Motor.getCurrentPosition());
+        BL_Motor.setTargetPosition(BL_Motor.getCurrentPosition());
+        BR_Motor.setTargetPosition(BR_Motor.getCurrentPosition());
 
-}   // end class
+        ((DcMotorEx)FL_Motor).setVelocity(0);
+        ((DcMotorEx)FR_Motor).setVelocity(0);
+        ((DcMotorEx)BL_Motor).setVelocity(0);
+        ((DcMotorEx)BR_Motor).setVelocity(0);
 
+        FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()){
+            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+
+    }
+    public void encoderDrive(int speed, int leftTicks, int rightTicks) { //encoder drive function
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+
+            FL_Motor.setTargetPosition(leftTicks);
+            FR_Motor.setTargetPosition(rightTicks);
+            BL_Motor.setTargetPosition(leftTicks);
+            BR_Motor.setTargetPosition(rightTicks);
+
+
+
+            // Turn On RUN_TO_POSITION
+            FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            // reset the timeout time and start motion.
+            //   runtime.reset();
+
+            ((DcMotorEx)FL_Motor).setVelocity(speed);
+            ((DcMotorEx)FR_Motor).setVelocity(speed);
+            ((DcMotorEx)BL_Motor).setVelocity(speed);
+            ((DcMotorEx)BR_Motor).setVelocity(speed);
+
+            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
+
+
+                // Turn off RUN_TO_POSITION
+                FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                sleep(250);   // optional pause after each move.
+                ((DcMotorEx) FL_Motor).setVelocity(0);
+                ((DcMotorEx) FR_Motor).setVelocity(0);
+                ((DcMotorEx) BL_Motor).setVelocity(0);
+                ((DcMotorEx) BR_Motor).setVelocity(0);
+            }
+        }
+    }
+}

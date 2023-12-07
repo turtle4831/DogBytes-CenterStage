@@ -150,46 +150,23 @@ public class visionEncoderAutoTest extends LinearOpMode {
                 telemetry.update();
 
                 if(foundObj){
-                    Claw.setPosition(1);
-                    sleep(500);
-                    encoderDrive(1000,800,800);
-                    sleep(500);
-                    L_Slide.setPower(0.3);
-                    R_Slide.setPower(0.3);
-                    sleep(3400);
-                    L_Slide.setPower(0);
-                    R_Slide.setPower(0);
-                    sleep(500);
-                    Wrist.setPosition(0.45);
                     if(id == 1){
                         //code for left
-                        encoderDrive(2500,-500,500);
-                        sleep(1000);
-                        encoderDrive(2500,1000,1000);
-                        sleep(500);
-                        Claw.setPosition(0.85);
+                        encoderDrive(1000,-500,500);
                         sleep(500);
                         sleep(500000);
                     }else if(id == 2 ){
                         //code for middle
-                        encoderDrive(2500,260,260);
-                        sleep(500);
-                        Claw.setPosition(0.85);
-                        sleep(500);
-                        encoderDrive(1000,200,200);
-                        sleep(500);
-                        encoderDrive(1000,-500,500);
+                        encoderDrive(1000,2300,2300);
                         sleep(500);
                         sleep(500000);
                     }else if(id == 3){
                         //code for right
-                        encoderDrive(2500,500,-500);
-                        sleep(1000);
-                        encoderDrive(2500,1000,1000);
+                        encoderDrive(300,400,400);
                         sleep(500);
-                        encoderDrive(1000,-1000,1000);
+                        encoderDrive(300,-500,500);
                         sleep(500);
-                        Claw.setPosition(0.85);
+                        encoderDrive(300,300,300);
                         sleep(500);
                         sleep(500000);
                     }

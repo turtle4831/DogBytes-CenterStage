@@ -30,11 +30,10 @@ public class AutoDoubleVisionTest extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal myVisionPortal;
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolRed.tflite"; // blue
-    // change with blue stuff  private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
+   private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";// use this if ur storing on the control hub
     private static final String[] LABELS = { //these must be in training order
-            // "RedTeam"
-            "BlueTeamObj"
+             "RedTeam"
+            //"BlueTeamObj"
     };
 
     @Override
