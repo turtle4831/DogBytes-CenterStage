@@ -10,11 +10,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.CachingFocusControl;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 
 import java.util.List;
 @Autonomous(name = "Double Vision + encoder test")
@@ -38,6 +42,7 @@ public class visionEncoderAutoTest extends LinearOpMode {
     public DcMotor R_Slide;
     public Servo Wrist;
     public Servo Claw;
+
 
     int id = 3;
 
@@ -88,6 +93,7 @@ public class visionEncoderAutoTest extends LinearOpMode {
 
         initDoubleVision();
         waitForStart();
+
 
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
@@ -224,6 +230,7 @@ public class visionEncoderAutoTest extends LinearOpMode {
                 //.setModelInputSize(300)
                 .setModelAspectRatio(1.0)
 
+
                 .build();
 
         // -----------------------------------------------------------------------------------------
@@ -233,8 +240,10 @@ public class visionEncoderAutoTest extends LinearOpMode {
         if (USE_WEBCAM) {
             myVisionPortal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "camera1"))
+
                     .addProcessors(tfod, aprilTag)
                     .build();
+
         } else {
             myVisionPortal = new VisionPortal.Builder()
                     .setCamera(BuiltinCameraDirection.BACK)
@@ -335,7 +344,13 @@ public class visionEncoderAutoTest extends LinearOpMode {
             ((DcMotorEx)BL_Motor).setVelocity(speed);
             ((DcMotorEx)BR_Motor).setVelocity(speed);
 
-            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
+            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+                telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+                telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
+                telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
+                telemetry.addData("BR pos", BR_Motor.getCurrentPosition());
+                telemetry.update();
+            }
 
 
                 // Turn off RUN_TO_POSITION
@@ -354,7 +369,6 @@ public class visionEncoderAutoTest extends LinearOpMode {
                 ((DcMotorEx) FR_Motor).setVelocity(0);
                 ((DcMotorEx) BL_Motor).setVelocity(0);
                 ((DcMotorEx) BR_Motor).setVelocity(0);
-            }
         }
     }
 }

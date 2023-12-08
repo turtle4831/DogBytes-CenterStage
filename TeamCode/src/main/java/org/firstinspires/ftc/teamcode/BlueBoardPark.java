@@ -45,20 +45,21 @@ public class BlueBoardPark extends LinearOpMode {
             ((DcMotorEx)BL_Motor).setVelocity(speed);
             ((DcMotorEx)BR_Motor).setVelocity(speed);
 
-            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
+                if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition() && FR_Motor.getCurrentPosition() == FR_Motor.getTargetPosition()) {
 
 
-                // Turn off RUN_TO_POSITION
-                FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    // Turn off RUN_TO_POSITION
+                    FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                sleep(250);   // optional pause after each move.
-                ((DcMotorEx) FL_Motor).setVelocity(0);
-                ((DcMotorEx) FR_Motor).setVelocity(0);
-                ((DcMotorEx) BL_Motor).setVelocity(0);
-                ((DcMotorEx) BR_Motor).setVelocity(0);
+             //       sleep(500);   // optional pause after each move.
+                    ((DcMotorEx) FL_Motor).setVelocity(0);
+                    ((DcMotorEx) FR_Motor).setVelocity(0);
+                    ((DcMotorEx) BL_Motor).setVelocity(0);
+                    ((DcMotorEx) BR_Motor).setVelocity(0);
+
             }
         }
     }
@@ -100,7 +101,8 @@ public class BlueBoardPark extends LinearOpMode {
                 ((DcMotorEx) FR_Motor).setVelocity(0);
                 ((DcMotorEx) BL_Motor).setVelocity(0);
                 ((DcMotorEx) BR_Motor).setVelocity(0);
-            }
+
+        }
         }
     }
 
@@ -132,10 +134,16 @@ public class BlueBoardPark extends LinearOpMode {
             while (opModeIsActive()) {
                 int[] motorLocations = new int[]{FL_Motor.getCurrentPosition(),FR_Motor.getCurrentPosition(),BL_Motor.getCurrentPosition(),BR_Motor.getCurrentPosition()};
                 //call a sleep for 500 ms after every encoder drive funciton
-                encoderDrive(2500,1000,1000);
+                encoderDrive(2500,250,250);
                 sleep(500);
-                encoderDriveStrafe(-1000,1000,-1000,1000,2500);//to the left
-                sleep(500);
+                encoderDrive(1000,-1050,1050);
+                sleep(2000);
+                encoderDrive(1000,2600,2600);
+                sleep(2000);
+                ((DcMotorEx) FL_Motor).setVelocity(0);
+                ((DcMotorEx) FR_Motor).setVelocity(0);
+                ((DcMotorEx) BL_Motor).setVelocity(0);
+                ((DcMotorEx) BR_Motor).setVelocity(0);
                 sleep(500000000);
 
                 // adds the motor position to the telemetry

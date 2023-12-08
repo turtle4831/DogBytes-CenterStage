@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
@@ -45,21 +44,26 @@ public class BlueAudiencePark extends LinearOpMode {
             ((DcMotorEx)BL_Motor).setVelocity(speed);
             ((DcMotorEx)BR_Motor).setVelocity(speed);
 
-            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
-
-
-                // Turn off RUN_TO_POSITION
-                FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                sleep(250);   // optional pause after each move.
-                ((DcMotorEx) FL_Motor).setVelocity(0);
-                ((DcMotorEx) FR_Motor).setVelocity(0);
-                ((DcMotorEx) BL_Motor).setVelocity(0);
-                ((DcMotorEx) BR_Motor).setVelocity(0);
+            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+                telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+                telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
+                telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
+                telemetry.addData("BR pos", BR_Motor.getCurrentPosition());
+                telemetry.update();
             }
+
+                    // Turn off RUN_TO_POSITION
+                    FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                    sleep((long) leftTicks + rightTicks);   // optional pause after each move.
+                    ((DcMotorEx) FL_Motor).setVelocity(0);
+                    ((DcMotorEx) FR_Motor).setVelocity(0);
+                    ((DcMotorEx) BL_Motor).setVelocity(0);
+                    ((DcMotorEx) BR_Motor).setVelocity(0);
+
         }
     }
 
@@ -86,9 +90,13 @@ public class BlueAudiencePark extends LinearOpMode {
             ((DcMotorEx) BL_Motor).setVelocity(speed);
             ((DcMotorEx) BR_Motor).setVelocity(speed);
 
-            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
-
-
+            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+                telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+                telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
+                telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
+                telemetry.addData("BR pos", BR_Motor.getCurrentPosition());
+                telemetry.update();
+            }
                 // Turn off RUN_TO_POSITION
                 FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -100,7 +108,7 @@ public class BlueAudiencePark extends LinearOpMode {
                 ((DcMotorEx) FR_Motor).setVelocity(0);
                 ((DcMotorEx) BL_Motor).setVelocity(0);
                 ((DcMotorEx) BR_Motor).setVelocity(0);
-            }
+
         }
     }
 
@@ -114,8 +122,8 @@ public class BlueAudiencePark extends LinearOpMode {
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -131,12 +139,17 @@ public class BlueAudiencePark extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 int[] motorLocations = new int[]{FL_Motor.getCurrentPosition(),FR_Motor.getCurrentPosition(),BL_Motor.getCurrentPosition(),BR_Motor.getCurrentPosition()};
-                //call a sleep for 500 ms after every encoder drive funciton
-                encoderDrive(2500,2500,2500);
-                sleep(500);
-                encoderDriveStrafe(-2000,2000,-2000,2000,2500);//to the left
-                sleep(500);
-                encoderDrive(1000,-1000,-1000);
+                //call a sleep for 500 ms after every encoder drive function
+                encoderDrive(1000,150,-150);
+
+                encoderDriveStrafe(4500,-4500,-4500,4500,2500);
+                ((DcMotorEx) FL_Motor).setVelocity(0);
+                ((DcMotorEx) FR_Motor).setVelocity(0);
+                ((DcMotorEx) BL_Motor).setVelocity(0);
+                ((DcMotorEx) BR_Motor).setVelocity(0);
+                telemetry.addData("Code is done",true);
+                telemetry.update();
+                sleep(2000);
                 sleep(500000000);
 
                 // adds the motor position to the telemetry

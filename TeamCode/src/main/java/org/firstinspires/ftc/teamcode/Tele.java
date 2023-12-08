@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -87,6 +88,7 @@ public class Tele extends LinearOpMode {
             FR_Motor.setPower(FRPower);
             BL_Motor.setPower(BLPower);
             BR_Motor.setPower(BRPower);
+            ((DcMotorEx)FL_Motor).setVelocity(FLPower);
 
             if (gamepad1.a){//for shooting airplane
               Airplane.setPosition(0.0);
