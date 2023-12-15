@@ -26,12 +26,12 @@ public class AutoTestVision extends LinearOpMode {
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
 
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolRed.tflite"; // blue
-    // change with blue stuff  private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
+  //  private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolRed.tflite"; // blue
+   private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-           // "RedTeam"
-          "BlueTeamObj"
+           "RedTeam"
+          //"BlueTeamObj"
     };
 
     /**

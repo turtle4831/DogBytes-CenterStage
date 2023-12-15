@@ -20,6 +20,8 @@ public class EncoderTestNoMove extends LinearOpMode {
     public DcMotor FR_Motor;
     public DcMotor BR_Motor;
     public DcMotor BL_Motor;
+    public DcMotor L_Slide;
+    public DcMotor R_Slide;
     public ElapsedTime runtime = new ElapsedTime();
 
 
@@ -29,6 +31,8 @@ public class EncoderTestNoMove extends LinearOpMode {
         FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
         BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
+        L_Slide = hardwareMap.get(DcMotor.class,"L_Slide");
+        R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -37,11 +41,15 @@ public class EncoderTestNoMove extends LinearOpMode {
 
 
 
+
         //resets the encoders and starts them again cause i can
         FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        L_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        R_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
 
@@ -54,6 +62,9 @@ public class EncoderTestNoMove extends LinearOpMode {
                 for (int motorLocation : motorLocations) {
                     telemetry.addData("Motor locations", motorLocation);
                 }
+                telemetry.addData("Left slide pos",L_Slide.getCurrentPosition());
+                telemetry.addData("Right Slide pos", R_Slide.getCurrentPosition());
+
                 telemetry.addData("Which way the robot is going", direction);
                 telemetry.update();
 

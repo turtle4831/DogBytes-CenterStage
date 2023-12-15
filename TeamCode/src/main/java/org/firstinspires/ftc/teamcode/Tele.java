@@ -25,6 +25,48 @@ public class Tele extends LinearOpMode {
     public Servo Claw;
     public Servo LeftMech;
     public Servo RightMech;
+    public void slideEncoder(int speed, int distanceInTicks){
+        if (opModeIsActive()) {
+
+
+            L_Slide.setTargetPosition(distanceInTicks);
+            R_Slide.setTargetPosition(distanceInTicks);
+
+
+            // Turn On RUN_TO_POSITION
+            L_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            R_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            //   runtime.reset();
+
+            ((DcMotorEx) L_Slide).setVelocity(speed);
+            ((DcMotorEx) R_Slide).setVelocity(speed);
+
+
+
+            while(R_Slide.isBusy() && L_Slide.isBusy()) {
+                telemetry.addData("Left Slide pos", L_Slide.getCurrentPosition());
+                telemetry.addData("Right Slide pos", R_Slide.getCurrentPosition());
+
+                telemetry.update();
+            }
+            L_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            R_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // Turn off RUN_TO_POSITION
+            L_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            R_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+            sleep(250);   // optional pause after each move.
+            ((DcMotorEx) L_Slide).setVelocity(0);
+            ((DcMotorEx) R_Slide).setVelocity(0);
+
+
+        }
+    }
 
     @Override
     public void runOpMode(){
@@ -72,9 +114,7 @@ public class Tele extends LinearOpMode {
             //local variables for the motor power values. future me if u ever fix this replace axial and yaw
             double axial = -gamepad1.right_stick_x;
             double lateral = -gamepad1.left_stick_x;
-            double yaw = -gamepad1.left_stick_y;  //for jake
-
-            //double yaw = -gamepad1.right_stick_x * 0.7; for adam
+            double yaw = -gamepad1.left_stick_y;
 
 
             //turning the power values to the sum of all the stick inputs
@@ -88,7 +128,6 @@ public class Tele extends LinearOpMode {
             FR_Motor.setPower(FRPower);
             BL_Motor.setPower(BLPower);
             BR_Motor.setPower(BRPower);
-            ((DcMotorEx)FL_Motor).setVelocity(FLPower);
 
             if (gamepad1.a){//for shooting airplane
               Airplane.setPosition(0.0);
@@ -96,16 +135,16 @@ public class Tele extends LinearOpMode {
             if (gamepad1.b){//bring the servo back to last position
               Airplane.setPosition(1);
             }
+            //add more airplane stuff in player 1
+            if (gamepad1.x){
+                L_Slide.setPower(-0.4);
+                R_Slide.setPower(-0.4);
+            }
 
 //end of gamepad1
 // beginning  of gamepad2
-            Rubber.setPower(gamepad2.right_stick_y);
-            if (!Fullpower){
-                Intake.setPower(gamepad2.right_stick_y * 0.5); //sets the intake power
-            }
-            if (Fullpower){
-                Intake.setPower(gamepad2.right_stick_y);
-            }
+
+
 
             double lift = gamepad2.right_trigger - gamepad2.left_trigger; //makes it so the slides take the sum of right and left trigger to give a power level
             L_Slide.setPower(lift);
@@ -123,43 +162,40 @@ public class Tele extends LinearOpMode {
             //code for the wrist
 
             if(gamepad2.left_bumper){
-                Wrist.setPosition(0.3); //wrist down half way
+                Wrist.setPosition(0.4); //wrist down half way
             }
 
             if (gamepad2.right_bumper){
-                Wrist.setPosition(0);//wrist goes in
+                Wrist.setPosition(0.1);//wrist goes in
             }
             if (gamepad2.y){
-                Claw.setPosition(0.85);
+                Claw.setPosition(0.65);
             }
             if (gamepad2.x) {
                 Claw.setPosition(1);//claw closes
             }
 
-            //code for auto-load
-            if (gamepad2.dpad_up){ //load to the claw
-                Claw.setPosition(0.85);
+           //code for intake/conveyor
+            if(gamepad2.dpad_up) {
                 Intake.setPower(1.0);
-                Rubber.setPower(0.6);
-                sleep(1500);
-                Intake.setPower(0);
-                Rubber.setPower(0);
-                Claw.setPosition(1);
+                Rubber.setPower(0.55); //for testing when the locking is in change to 6
             }
-            if (gamepad2.dpad_down){//load to line
-                Intake.setPower(1.0);
-                Rubber.setPower(0.6);
-                sleep(1200);
-                Rubber.setPower(0);
+            if(gamepad2.dpad_down){
                 Intake.setPower(0);
+                Rubber.setPower(0);
+            }
+            if (gamepad2.dpad_left){
+                Rubber.setPower(-0.6);
             }
             if (gamepad2.dpad_right){
-                Fullpower = !Fullpower;
+                Rubber.setPower(0.75);
             }
+
+
+            
+
+
 //end of gamepad2
-            if (Fullpower){
-                telemetry.addData("FULL POWER IS ACTIVATED USE DPAD RIGHT TO TURN IT OFF", Fullpower);
-            }
             telemetry.addData("FL_Motor Current Power", "%.2f", FLPower);   //gives telemetry for the FL Motor
             telemetry.addData("FR_Motor Current Power", "%.2f", FRPower);   //gives telemetry for the FR Motor
             telemetry.addData("BL_Motor Current Power", "%.2f", BLPower);   //gives telemetry for the BL Motor

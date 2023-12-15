@@ -39,7 +39,9 @@ public class AutoRedAudience extends LinearOpMode {
     public Servo Wrist;
     public Servo Claw;
 
+    public DcMotor Intake;
     int id = 3;
+    boolean notFound = true;
 
 
     /**
@@ -65,6 +67,7 @@ public class AutoRedAudience extends LinearOpMode {
         FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
         BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
         L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
         R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
 
@@ -74,9 +77,13 @@ public class AutoRedAudience extends LinearOpMode {
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        FR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
+        R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
 
@@ -96,53 +103,120 @@ public class AutoRedAudience extends LinearOpMode {
 
 
                 // Push telemetry to the Driver Station.
-                telemetry.update();
-                List<Recognition> currentRecognitions = tfod.getRecognitions();
-                for (Recognition recognition : currentRecognitions) {
-                    if(recognition.getWidth() < 200 && recognition.getHeight() < 200 ){
-                        this.x = (recognition.getLeft() + recognition.getRight()) / 2;
-                        this.width = recognition.getWidth();
-                        this.height = recognition.getHeight();
-                    }else if (currentRecognitions.size() <= 1 ){
-                        goLeft = true;
+
+                    telemetry.update();
+                    List<Recognition> currentRecognitions = tfod.getRecognitions();
+                    for (Recognition recognition : currentRecognitions) {
+                        if ( recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490  && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
+                            this.x = (recognition.getLeft() + recognition.getRight()) / 2;
+                            this.width = recognition.getWidth();
+                            this.height = recognition.getHeight();
+                        }
+
+
                     }
 
 
-                }
+                    //for blue board side
+                    if (x >= 100 && x <= 300 ) {//middle
+                        telemetry.addData("Going middle", x);
+                        foundObj = true;
+                        id = 5;
+                    } else if (x >= 350 && x <= 480) {// right
+                        telemetry.addData("Going right", x);
+                        foundObj = true;
+                        id = 6;
+                    } else {
+                        telemetry.addData("Going left", x);
+                        foundObj = true;
+                        id = 4;
+                    }
 
-                //for blue board side
-                if (x >= 100 && x <= 300 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {//middle
-                    telemetry.addData("Going middle", x);
-                    foundObj = true;
-                    id = 2;
-                } else if (x >= 350 && x <= 450 && width >= 100 && width <= 200 && height >= 100 && height <= 200) {// right
-                    telemetry.addData("Going right", x);
-                    foundObj = true;
-                    id = 3;
-                } else if(goLeft) {
-                    telemetry.addData("Going left", x);
-                    foundObj = true;
-                    id = 1;
-                }
+
                 telemetry.update();
 
                 if(foundObj){
-                    encoderDrive(2500,1000,1000);
-                    if(id == 1){
+                    myVisionPortal.setProcessorEnabled(tfod,false);
+                    Claw.setPosition(1);
+                    if(id == 4){
                         //code for left
-                        encoderDrive(1000,-1000,1000);
-                        sleep(500);
-                        sleep(500000);
-                    }else if(id == 2 ){
+                        encoderDriveStrafe(550,-550,-550,550,1000);
+                        encoderDrive(1000,1100,-1100);
+                        Intake.setPower(-0.3);
+                        encoderDrive(1000,-1050,1050);
+                        Intake.setPower(0);
+                        encoderDriveStrafe(-550,550,550,-550,1000);
+                        encoderDrive(1000,150,-150);
+                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
+
+                    }else if(id == 5 ){
                         //code for middle
-                        encoderDrive(2500,1000,1000);
-                        sleep(500000);
-                    }else if(id == 3){
+                        encoderDrive(1500,1200,-1200);//make all the right values the opposite
+                        Intake.setPower(-0.3);
+                        encoderDrive(1500,-1200,1200);
+                        Intake.setPower(0);
+                        encoderDrive(1000,150,-150);
+                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
+
+
+                    }else if(id == 6){
                         //code for right
-                        encoderDrive(1000,1000,-1000);
+                        encoderDrive(1000,700,-700); //goes forward 700 jahsdb
+                        encoderDrive(600,550,550); //this actually turns to the left
+                        encoderDrive(1000,350,-350); //also goes forward
+                        Intake.setPower(-0.3);
+                        encoderDrive(1000,-350,350);
+                        Intake.setPower(0);
+                        encoderDrive(600,-550,-550);
+                        encoderDrive(1000,-700,700);
+                        encoderDrive(1000,150,-150);
+                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
                         sleep(500);
-                        sleep(500000);
+
                     }
+
+                    encoderDriveStrafe(300,-300,-300,300,2500);
+                    encoderDrive(1000,250,-250);
+                    encoderDrive(700,1100,1100);//this actually turns lolololol
+                    int i = 0;
+                    while(notFound){
+                        if(opModeIsActive()) {
+                            FL_Motor.setPower(0.1);
+                            BL_Motor.setPower(-0.1);
+                            FR_Motor.setPower(-0.1);
+                            BR_Motor.setPower(0.1);
+
+                            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+                            for (AprilTagDetection detection : currentDetections) {
+                                if (detection.metadata != null) {
+                                    if (detection.id == id) {
+                                        telemetry.addData("Found ", detection.id);
+                                        FL_Motor.setPower(0);
+                                        BL_Motor.setPower(0);
+                                        FR_Motor.setPower(0);
+                                        BR_Motor.setPower(0);
+                                        notFound = false;
+                                    }
+                                }
+                            }
+                            i++;
+                        }
+                    }
+                    sleep(500);
+                    telemetry.update();
+                    encoderDrive(1500,2800,2800);
+                    slideEncoder(1000,2000);
+                    L_Slide.setPower(0.1);
+                    R_Slide.setPower(0.1);
+                    Wrist.setPosition(0.4);
+                    encoderDrive(1000,-1000,1000);
+                    Claw.setPosition(0.65);
+                    sleep(1000);
+                    L_Slide.setPower(0);
+                    R_Slide.setPower(0);
+                    encoderDriveStrafe(-1000,1000,1000,-1000,1500);
+                    sleep(500);
+                    sleep(500000000);
                 }
 
 
@@ -195,7 +269,7 @@ public class AutoRedAudience extends LinearOpMode {
                 .setIsModelTensorFlow2(true)
                 .setIsModelQuantized(true)
                 //.setModelInputSize(300)
-                .setModelAspectRatio(1.0)
+                .setModelAspectRatio(16/9)
 
                 .build();
 
@@ -257,32 +331,9 @@ public class AutoRedAudience extends LinearOpMode {
         }   // end for() loop
 
     }   // end method telemetryTfod()
-    public void motorSleep(){
-        FL_Motor.setTargetPosition(FL_Motor.getCurrentPosition());
-        FR_Motor.setTargetPosition(FR_Motor.getCurrentPosition());
-        BL_Motor.setTargetPosition(BL_Motor.getCurrentPosition());
-        BR_Motor.setTargetPosition(BR_Motor.getCurrentPosition());
-
-        ((DcMotorEx)FL_Motor).setVelocity(0);
-        ((DcMotorEx)FR_Motor).setVelocity(0);
-        ((DcMotorEx)BL_Motor).setVelocity(0);
-        ((DcMotorEx)BR_Motor).setVelocity(0);
-
-        FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()){
-            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
 
 
-    }
-    public void encoderDrive(int speed, int leftTicks, int rightTicks) { //encoder drive function
+    public void encoderDrive(int speed, int leftTicks, int rightTicks) {
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
@@ -308,26 +359,122 @@ public class AutoRedAudience extends LinearOpMode {
             ((DcMotorEx)BL_Motor).setVelocity(speed);
             ((DcMotorEx)BR_Motor).setVelocity(speed);
 
-            if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()) {
-
-
-                // Turn off RUN_TO_POSITION
-                FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                sleep(250);   // optional pause after each move.
-                ((DcMotorEx) FL_Motor).setVelocity(0);
-                ((DcMotorEx) FR_Motor).setVelocity(0);
-                ((DcMotorEx) BL_Motor).setVelocity(0);
-                ((DcMotorEx) BR_Motor).setVelocity(0);
+            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+                telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+                telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
+                telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
+                telemetry.addData("BR pos", BR_Motor.getCurrentPosition());
+                telemetry.update();
             }
+            FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // Turn off RUN_TO_POSITION
+            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(250);   // optional pause after each move.
+            ((DcMotorEx) FL_Motor).setVelocity(0);
+            ((DcMotorEx) FR_Motor).setVelocity(0);
+            ((DcMotorEx) BL_Motor).setVelocity(0);
+            ((DcMotorEx) BR_Motor).setVelocity(0);
+
         }
     }
+    public void encoderDriveStrafe(int FrontLeft,int BackLeft,int FrontRight,int BackRight,int speed) {
+        if (opModeIsActive()) {
+
+
+            FL_Motor.setTargetPosition(FrontLeft);
+            FR_Motor.setTargetPosition(FrontRight);
+            BL_Motor.setTargetPosition(BackLeft);
+            BR_Motor.setTargetPosition(BackRight);
+
+
+            // Turn On RUN_TO_POSITION
+            FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            // reset the timeout time and start motion.
+            //   runtime.reset();
+
+            ((DcMotorEx) FL_Motor).setVelocity(speed);
+            ((DcMotorEx) FR_Motor).setVelocity(speed);
+            ((DcMotorEx) BL_Motor).setVelocity(speed);
+            ((DcMotorEx) BR_Motor).setVelocity(speed);
+
+            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+                telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+                telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
+                telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
+                telemetry.addData("BR pos", BR_Motor.getCurrentPosition());
+                telemetry.update();
+            }
+            FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // Turn off RUN_TO_POSITION
+            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(250);   // optional pause after each move.
+            ((DcMotorEx) FL_Motor).setVelocity(0);
+            ((DcMotorEx) FR_Motor).setVelocity(0);
+            ((DcMotorEx) BL_Motor).setVelocity(0);
+            ((DcMotorEx) BR_Motor).setVelocity(0);
+
+        }
+    }
+    public void slideEncoder(int speed, int distanceInTicks){
+        if (opModeIsActive()) {
+
+
+            L_Slide.setTargetPosition(distanceInTicks);
+            R_Slide.setTargetPosition(distanceInTicks);
+
+
+            // Turn On RUN_TO_POSITION
+            L_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            R_Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            //   runtime.reset();
+
+            ((DcMotorEx) L_Slide).setVelocity(speed);
+            ((DcMotorEx) R_Slide).setVelocity(speed);
+
+
+
+            while(R_Slide.isBusy() && L_Slide.isBusy()) {
+                telemetry.addData("Left Slide pos", L_Slide.getCurrentPosition());
+                telemetry.addData("Right Slide pos", R_Slide.getCurrentPosition());
+
+                telemetry.update();
+            }
+            L_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            R_Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            // Turn off RUN_TO_POSITION
+            L_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            R_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+            sleep(250);   // optional pause after each move.
+            ((DcMotorEx) L_Slide).setVelocity(0);
+            ((DcMotorEx) R_Slide).setVelocity(0);
+
+
+        }
+    }
+
 }

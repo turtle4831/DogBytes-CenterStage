@@ -119,7 +119,7 @@ public class AutoDoubleVisionTest extends LinearOpMode {
                 .setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
-                .setModelAspectRatio(1.0)
+                .setModelAspectRatio(16/9)
 
                 .build();
 
