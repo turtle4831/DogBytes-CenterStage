@@ -167,24 +167,22 @@ public class AutoRedBoard extends LinearOpMode {
                         encoderDriveStrafe(550,-550,-550,550,1000);
                     }
                     //after it returns to the starting position
-                    encoderDrive(2500,250,-250);
-                    encoderDrive(1000,1050,1050);
-                    encoderDrive(1000,2600,-2600);
-
-
-
+                    encoderDrive(1000,150,-150);
+                    encoderDriveStrafe(2500,-2500,-2500,2500,2500);
+                    encoderDrive(1000,1000,1000);//turns left
+                    encoderDrive(500,-500,500); //drives back some
 
                     while(notFound){
                         if(opModeIsActive()) {
-                            FL_Motor.setPower(0.1);
+                            FL_Motor.setPower(0.1);  //constanly strafes at a set speed
                             BL_Motor.setPower(-0.1);
                             FR_Motor.setPower(-0.1);
                             BR_Motor.setPower(0.1);
 
-                            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                            for (AprilTagDetection detection : currentDetections) {
-                                if (detection.metadata != null) {
-                                    if (detection.id == id) {
+                            List<AprilTagDetection> currentDetections = aprilTag.getDetections(); //creates a list full of the current april tag detections
+                            for (AprilTagDetection detection : currentDetections) { //for each of the detections
+                                if (detection.metadata != null) { //if the aprilTag is a real tag
+                                    if (detection.id == id) { //if its equal to the one we want it zeros the motor power and sends info to the driver hub
                                         telemetry.addData("Found ", detection.id);
                                         FL_Motor.setPower(0);
                                         BL_Motor.setPower(0);

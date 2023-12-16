@@ -141,16 +141,13 @@ public class AutoBlueAudience extends LinearOpMode {
                         encoderDrive(1000,-350,350);
                         encoderDrive(600,550,550);
                         encoderDrive(1000,-700,700);
-                        encoderDrive(1000,25,-25);
-                        encoderDriveStrafe(4500,-4500,-4500,4500,2500);
                         sleep(500);
 
                     }else if(id == 2){
                         //code for middle
                         encoderDrive(1500,1200,-1200);        //make all the right values the opposite
                         encoderDrive(1500,-1200,1200);
-                        encoderDrive(1000,150,-150);
-                        encoderDriveStrafe(4500,-4500,-4500,4500,2500);
+
                         sleep(500);
                     }else if(id == 3){
                         //code for right
@@ -159,14 +156,14 @@ public class AutoBlueAudience extends LinearOpMode {
                         encoderDrive(1000,1100,-1100);
                         encoderDrive(1000,-1050,1050);
                         encoderDriveStrafe(550,-550,-550,550,1000);
-                        encoderDrive(1000,50,-50);
-                        encoderDriveStrafe(4500,-4500,-4500,4500,2500);
                         sleep(500);
                     }
+                    encoderDrive(1000,150,-150);
+                    encoderDriveStrafe(4500,-4500,-4500,4500,2500); //starting position
 
                     encoderDriveStrafe(-300,300,300,-300,1000);
                     encoderDrive(1000,250,-250);
-                    encoderDrive(1500,-1100,-1100);//this actually turns lolololol
+                    encoderDrive(1500,-1100,-1150);//this actually turns lolololol
                     int i = 0;
                     while(notFound){
                         if(opModeIsActive()) {
