@@ -16,6 +16,7 @@ public class BlueBoardPark extends LinearOpMode {
     public DcMotor FR_Motor;
     public DcMotor BR_Motor;
     public DcMotor BL_Motor;
+    public DcMotor Intake;
 
 
 
@@ -113,11 +114,13 @@ public class BlueBoardPark extends LinearOpMode {
         FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
         BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
+        Intake = hardwareMap.get(DcMotor.class,"Intake");
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
         BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -144,6 +147,9 @@ public class BlueBoardPark extends LinearOpMode {
                 ((DcMotorEx) FR_Motor).setVelocity(0);
                 ((DcMotorEx) BL_Motor).setVelocity(0);
                 ((DcMotorEx) BR_Motor).setVelocity(0);
+                Intake.setPower(-0.3);
+                sleep(1000);
+                Intake.setPower(0);
                 sleep(500000000);
 
                 // adds the motor position to the telemetry

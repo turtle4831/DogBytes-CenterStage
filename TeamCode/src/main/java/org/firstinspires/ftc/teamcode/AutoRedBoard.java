@@ -168,7 +168,7 @@ public class AutoRedBoard extends LinearOpMode {
                     }
                     //after it returns to the starting position
                     encoderDrive(1000,150,-150);
-                    encoderDriveStrafe(2500,-2500,-2500,2500,2500);
+                    encoderDriveStrafe(-2500,2500,2500,-2500,2500);
                     encoderDrive(1000,1000,1000);//turns left
                     encoderDrive(500,-500,500); //drives back some
 

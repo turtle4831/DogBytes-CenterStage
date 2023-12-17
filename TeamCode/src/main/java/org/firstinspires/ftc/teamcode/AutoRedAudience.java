@@ -146,8 +146,7 @@ public class AutoRedAudience extends LinearOpMode {
                         encoderDrive(1000,-1050,1050);
                         Intake.setPower(0);
                         encoderDriveStrafe(-550,550,550,-550,1000);
-                        encoderDrive(1000,150,-150);
-                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
+
 
                     }else if(id == 5 ){
                         //code for middle
@@ -155,8 +154,7 @@ public class AutoRedAudience extends LinearOpMode {
                         Intake.setPower(-0.3);
                         encoderDrive(1500,-1200,1200);
                         Intake.setPower(0);
-                        encoderDrive(1000,150,-150);
-                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
+
 
 
                     }else if(id == 6){
@@ -169,12 +167,11 @@ public class AutoRedAudience extends LinearOpMode {
                         Intake.setPower(0);
                         encoderDrive(600,-550,-550);
                         encoderDrive(1000,-700,700);
-                        encoderDrive(1000,150,-150);
-                        encoderDriveStrafe(-4500,4500,4500,-4500,2500);
                         sleep(500);
 
                     }
-
+                    encoderDrive(1000,150,-150);
+                    encoderDriveStrafe(-4500,4500,4500,-4500,2000);
                     encoderDriveStrafe(300,-300,-300,300,2500);
                     encoderDrive(1000,250,-250);
                     encoderDrive(700,1100,1100);//this actually turns lolololol
@@ -214,7 +211,7 @@ public class AutoRedAudience extends LinearOpMode {
                     sleep(1000);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
-                    encoderDriveStrafe(-1000,1000,1000,-1000,1500);
+                    //encoderDriveStrafe(-1000,1000,1000,-1000,1500);
                     sleep(500);
                     sleep(500000000);
                 }

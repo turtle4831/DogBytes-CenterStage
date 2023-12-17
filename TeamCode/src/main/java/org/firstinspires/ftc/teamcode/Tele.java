@@ -130,16 +130,15 @@ public class Tele extends LinearOpMode {
             BR_Motor.setPower(BRPower);
 
             if (gamepad1.a){//for shooting airplane
-              Airplane.setPosition(0.0);
+              Airplane.setPosition(0.3);
             }
             if (gamepad1.b){//bring the servo back to last position
-              Airplane.setPosition(1);
+              Airplane.setPosition(0.5);
             }
             //add more airplane stuff in player 1
-            if (gamepad1.x){
-                L_Slide.setPower(-0.4);
-                R_Slide.setPower(-0.4);
-            }
+
+
+
 
 //end of gamepad1
 // beginning  of gamepad2
@@ -150,14 +149,6 @@ public class Tele extends LinearOpMode {
             L_Slide.setPower(lift);
             R_Slide.setPower(lift);
 
-            if(gamepad2.a) { //does something for the mech locks
-                LeftMech.setPosition(1.0);
-                RightMech.setPosition(1.0);
-            }
-            if(gamepad2.b){// does something for mech locks but the opposite of the other
-                LeftMech.setPosition(0.0);
-                RightMech.setPosition(0.0);
-            }
 
             //code for the wrist
 
@@ -190,6 +181,20 @@ public class Tele extends LinearOpMode {
             if (gamepad2.dpad_right){
                 Rubber.setPower(0.75);
             }
+            if (gamepad2.a){
+                L_Slide.setPower(-0.45);
+                R_Slide.setPower(-0.45);
+                while(true){
+                    if(gamepad2.b){
+                        R_Slide.setPower(0);
+                        L_Slide.setPower(0);
+                        break;
+                    }else{
+                        sleep(10);
+                    }
+                }
+            }
+
 
 
             
