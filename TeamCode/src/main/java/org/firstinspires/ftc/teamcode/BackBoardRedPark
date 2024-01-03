@@ -1,0 +1,153 @@
+com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+@Autonomous(name ="SimpleRedBackboard" )
+public class RedSideBackboard extends LinearOpMode {
+    static final double TICKS_PER_REVOLUTION = 1440;
+    static final double DRIVE_GEAR_REDUCTION = 1.0;
+    static final double WHEEL_DIAMETER_INCHES = 4.0;
+    static final double COUNTS_PER_INCH = (TICKS_PER_REVOLUTION * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double DRIVE_Speed = 0.8;
+    static final double TURN_Speed = 0.4;
+    static final double STRAFE_Speed = 0.9;
+    public DcMotor FL_Motor;
+    public DcMotor FR_Motor;
+    public DcMotor BL_Motor;
+    public DcMotor BR_Motor;
+
+    public ElapsedTime runtime = new ElapsedTime();
+
+    public void encoderDiver(int leftTicks, int rightTicks, int speed) {
+        FL_Motor.setTargetPosition(leftTicks);
+        FR_Motor.setTargetPosition(rightTicks);
+        BL_Motor.setTargetPosition(leftTicks);
+        BR_Motor.setTargetPosition(rightTicks);
+
+        FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        runtime.reset();
+        ((DcMotorEx) FL_Motor).setVelocity(speed);
+        ((DcMotorEx) FR_Motor).setVelocity(speed);
+        ((DcMotorEx) BL_Motor).setVelocity(speed);
+        ((DcMotorEx) BR_Motor).setVelocity(speed);
+
+        while(FR_Motor.isBusy() && FL_Motor.isBusy()){
+            telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("FR pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("BL pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("BR pos", FL_Motor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()){
+
+            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            ((DcMotorEx) FL_Motor).setVelocity(0);
+            ((DcMotorEx) FR_Motor).setVelocity(0);
+            ((DcMotorEx) BL_Motor).setVelocity(0);
+            ((DcMotorEx) BR_Motor).setVelocity(0);
+
+            sleep(2000);
+
+
+        }
+
+    }
+
+    public void encoderStrafe(int speed, int leftDrive, int rightDrive, int leftBDrive, int rightBDrive){
+        FL_Motor.setTargetPosition(leftDrive);
+        FR_Motor.setTargetPosition(rightDrive);
+        BL_Motor.setTargetPosition(leftBDrive);
+        BR_Motor.setTargetPosition(rightBDrive);
+
+        FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        ((DcMotorEx)FL_Motor).setVelocity(speed);
+        ((DcMotorEx)FR_Motor).setVelocity(speed);
+        ((DcMotorEx)BL_Motor).setVelocity(speed);
+        ((DcMotorEx)BR_Motor).setVelocity(speed);
+
+        while(FR_Motor.isBusy() && FL_Motor.isBusy()){
+            telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("FR pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("BL pos", FL_Motor.getCurrentPosition());
+            telemetry.addData("BR pos", FL_Motor.getCurrentPosition());
+            telemetry.update();
+        }
+
+        if (FL_Motor.getCurrentPosition() == FL_Motor.getTargetPosition()){
+
+            FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            ((DcMotorEx) FL_Motor).setVelocity(0);
+            ((DcMotorEx) FR_Motor).setVelocity(0);
+            ((DcMotorEx) BL_Motor).setVelocity(0);
+            ((DcMotorEx) BR_Motor).setVelocity(0);
+
+            sleep(2000);
+        }
+
+
+    }
+
+
+
+
+@Override
+public void runOpMode(){
+        FL_Motor = hardwareMap.get(DcMotor.class,"FL_Motor");
+    FR_Motor = hardwareMap.get(DcMotor.class,"FR_Motor");
+    BL_Motor = hardwareMap.get(DcMotor.class,"BL_Motor");
+    BR_Motor = hardwareMap.get(DcMotor.class,"BR_Motor");
+
+    FL_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+    FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+    BL_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+    BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+    FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+    FL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    FR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    BL_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    BR_Motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+    telemetry.addData("Starting at","%7 :%7 :%7 :%7", FL_Motor.getCurrentPosition(),
+            FR_Motor.getCurrentPosition(),BL_Motor.getCurrentPosition(),BR_Motor.getCurrentPosition());
+    telemetry.update();
+
+    waitForStart();
+
+    encoderDiver(1000,1000,2500);
+    encoderStrafe(2500,-900,900,900,-900);
+    sleep(5000);
+
+telemetry.addData("Path", "Complete");
+telemetry.update();
+
+
+}
