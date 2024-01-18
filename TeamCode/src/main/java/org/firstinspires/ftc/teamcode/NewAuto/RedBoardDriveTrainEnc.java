@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.NewAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,8 +17,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-@Autonomous(name = "BlueBoardPurplePark")
-public class AutoBlueBoard extends LinearOpMode {
+@Autonomous(name = "RedBoardDriveTrainEnc")
+public class RedBoardDriveTrainEnc extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
@@ -39,6 +39,7 @@ public class AutoBlueBoard extends LinearOpMode {
     public DcMotor Intake;
     public Servo Wrist;
     public Servo Claw;
+
     public Servo Airplane;
 
     int id = 3;
@@ -54,11 +55,11 @@ public class AutoBlueBoard extends LinearOpMode {
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal myVisionPortal;
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesBlueV3.tflite"; // blue
-    // private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
+    //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesBlueV3.tflite"; // blue
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
     private static final String[] LABELS = { //these must be in training order
-            //  "RedTeam"
-            "BlueTeamObj"
+             "RedTeam"
+            //"BlueTeamObj"
     };
 
 
@@ -68,13 +69,12 @@ public class AutoBlueBoard extends LinearOpMode {
         FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
         BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
+        Intake = hardwareMap.get(DcMotor.class,"Intake");
         L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
         R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
-        Intake = hardwareMap.get(DcMotor.class, "Intake");
-
+        Airplane = hardwareMap.get(Servo.class, "Airplane");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
         Claw = hardwareMap.get(Servo.class, "Claw");
-        Airplane = hardwareMap.get(Servo.class, "Airplane");
 
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -82,9 +82,9 @@ public class AutoBlueBoard extends LinearOpMode {
         FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
         BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
 
+
         L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
         R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
-        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -105,12 +105,12 @@ public class AutoBlueBoard extends LinearOpMode {
 
 
                 // Push telemetry to the Driver Station.
-                encoderDrive(1000,100,100);
-                encoderDrive(1000,-100,-100);
+
+
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
                 for (Recognition recognition : currentRecognitions) {
-                    if ( recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490  && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
+                    if ( recognition.getWidth() < 205 && recognition.getHeight() < 205 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490  && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
                         this.x = (recognition.getLeft() + recognition.getRight()) / 2;
                         this.width = recognition.getWidth();
                         this.height = recognition.getHeight();
@@ -124,15 +124,15 @@ public class AutoBlueBoard extends LinearOpMode {
                 if (x >= 100 && x <= 300 ) {//middle
                     telemetry.addData("Going middle", x);
                     foundObj = true;
-                    id = 2;
-                } else if (x >= 350 && x <= 480) {// right
+                    id = 5;
+                } else if (x >= 300 && x <= 480) {// right
                     telemetry.addData("Going right", x);
                     foundObj = true;
-                    id = 3;
+                    id = 6;
                 } else {
                     telemetry.addData("Going left", x);
                     foundObj = true;
-                    id = 1;
+                    id = 4;
                 }
 
 
@@ -141,52 +141,53 @@ public class AutoBlueBoard extends LinearOpMode {
                 if(foundObj){
                     myVisionPortal.setProcessorEnabled(tfod,false);
                     Claw.setPosition(1);
-                    if(id == 1){
+                    if(id == 4){
                         //code for left
-                        encoderDriveStrafe(-550,550,550,-550,1000);
-                        encoderDrive(1000,1100,1100);
-                        Intake.setPower(-0.3);
-                        encoderDrive(1000,-1050,-1050);
-                        Intake.setPower(0);
-                        encoderDriveStrafe(550,-550,-550,550,1000);
-
-
-                    }else if(id == 2 ){
-                        //code for middle
-                        encoderDrive(1500,1200,1200);//make all the right values the opposite
-                        Intake.setPower(-0.3);
-                        encoderDrive(1500,-1200,-1200);
-                        Intake.setPower(0);
-
-
-                    }else if(id == 3){
-                        //code for right
                         encoderDrive(1000,700,700); //goes forward 700 jahsdb
-                        encoderDrive(600,550,-550); //this actually turns to the left
+                        encoderDrive(600,-550,550); //this actually turns to the left
                         encoderDrive(1000,350,350); //also goes forward
-                        Intake.setPower(-0.3);
+                        Intake.setPower(0.3);
                         encoderDrive(1000,-350,-350);
                         Intake.setPower(0);
-                        encoderDrive(600,-550,550);
-                        encoderDrive(1000,-700,-700);
+                        encoderDrive(600,550,-550);
+                        encoderDrive(1000,-750,-750);
                         sleep(500);
 
-                    }
-                    encoderDrive(1000,150,150);
-                    encoderDriveStrafe(-2500,2500,2500,-2500,2500);
-                    encoderDrive(1000,1000,-1000);//turns left
-                    encoderDrive(500,-500,-500); //drives back some
+                    }else if(id == 5){
+                        //code for middle
+                        encoderDrive(1500,1200,1200);//make all the right values the opposite
+                        Intake.setPower(0.3);
+                        encoderDrive(1500,-1250,-1250);
+                        Intake.setPower(0);
 
-                    if(isStopRequested()){
-                        return;
+                        sleep(500);
+                    }else if(id == 6){
+                        //code for right
+                        encoderDriveStrafe(550,-550,-550,550,1000);
+                        encoderDrive(1000,1100,1100);
+                        Intake.setPower(0.6);
+                        encoderDrive(1000,-1050,-1050);
+                        Intake.setPower(0);
+                        encoderDriveStrafe(-550,550,550,-550,1000);
+                        sleep(500);
+
+
                     }
+
+                    encoderDrive(1000,100,100);
+                    encoderDriveStrafe(1450,-1450,-1450,1450,1500); //starting position strafe right for red 1500 speed
+
+
+
+                    encoderDrive(1500,1200,-1200);//this actually turns lolololol
+                    encoderDriveStrafe(300,-300,-300,300,400);
                     int i = 0;
                     while(notFound){
                         if(opModeIsActive()) {
-                            FL_Motor.setPower(-0.1);
-                            BL_Motor.setPower(0.1);
-                            FR_Motor.setPower(0.1);
-                            BR_Motor.setPower(-0.1);
+                            FL_Motor.setPower(-0.2);
+                            BL_Motor.setPower(0.2);
+                            FR_Motor.setPower(0.2);
+                            BR_Motor.setPower(-0.2);
                             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                             for (AprilTagDetection detection : currentDetections) {
                                 if (detection.metadata != null) {
@@ -203,18 +204,35 @@ public class AutoBlueBoard extends LinearOpMode {
                             i++;
                         }
                     }
-                    if (isStopRequested()){
-                        return;
-                    }
+                    FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     sleep(500);
+                    if (id == 6){encoderDriveStrafe(60,-60,-60,60,500);}
+                    //encoderDriveStrafe(-180,180,180,-180,700);
                     telemetry.update();
-                    encoderDrive(2000,-2800,2800);
-                    slideEncoder(1500,2000);
+                    encoderDrive(1400,-2000,2000);
+                    L_Slide.setPower(0.6);
+                    R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    encoderDrive(600,-1000,-1000);
-                    Claw.setPosition(0.65);
-                    sleep(1000);
-                    encoderDriveStrafe(-1000,1000,1000,-1000,1500);
+                    sleep(1500);
+                    L_Slide.setPower(0);
+                    R_Slide.setPower(0);
+                    encoderDrive(400,-770,-770);
+                    sleep(500);
+                    L_Slide.setPower(0);
+                    R_Slide.setPower(0);
+                    Claw.setPosition(0.4);
+                    sleep(500);
+                    Claw.setPosition(1);
+                    Wrist.setPosition(0.1);
+                    L_Slide.setPower(-0.3);
+                    R_Slide.setPower(-0.3);
+                    encoderDrive(600,300,300);
+                    encoderDriveStrafe(900,-900,-900,900,1500);
+                    L_Slide.setPower(0);
+                    R_Slide.setPower(0);
                     sleep(500);
                     sleep(500000000);
                 }

@@ -39,6 +39,8 @@ public class AutoBlueAudience extends LinearOpMode {
     public Servo Wrist;
     public Servo Claw;
 
+    public Servo Airplane;
+
     int id = 3;
     boolean notFound = true;
 
@@ -68,15 +70,17 @@ public class AutoBlueAudience extends LinearOpMode {
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
         L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
         R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
-
+        Airplane = hardwareMap.get(Servo.class, "Airplane");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
         Claw = hardwareMap.get(Servo.class, "Claw");
 
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
         L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
         R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -94,10 +98,13 @@ public class AutoBlueAudience extends LinearOpMode {
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
+            Airplane.setPosition(0.3);
             while (!isStopRequested() && opModeIsActive()) {
 
 
                 // Push telemetry to the Driver Station.
+                encoderDrive(1000,100,100);
+                encoderDrive(1000,-100,-100);
 
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -135,33 +142,33 @@ public class AutoBlueAudience extends LinearOpMode {
                     Claw.setPosition(1);
                     if(id == 1){
                         //code for left
-                        encoderDrive(1000,700,-700); //goes forward 700 jahsdb
-                        encoderDrive(600,-550,-550); //this actually turns to the left
-                        encoderDrive(1000,350,-350); //also goes forward
-                        encoderDrive(1000,-350,350);
-                        encoderDrive(600,550,550);
-                        encoderDrive(1000,-700,700);
+                        encoderDrive(1000,700,700); //goes forward 700 jahsdb
+                        encoderDrive(600,-550,550); //this actually turns to the left
+                        encoderDrive(1000,350,350); //also goes forward
+                        encoderDrive(1000,-350,-350);
+                        encoderDrive(600,550,-550);
+                        encoderDrive(1000,-700,-700);
                         sleep(500);
 
                     }else if(id == 2){
                         //code for middle
-                        encoderDrive(1500,1200,-1200);        //make all the right values the opposite
-                        encoderDrive(1500,-1200,1200);
+                        encoderDrive(1500,1200,1200);        //make all the right values the opposite
+                        encoderDrive(1500,-1200,-1200);
 
                         sleep(500);
                     }else if(id == 3){
                         //code for right
 
-                        encoderDriveStrafe(-550,550,550,-550,1000);
+                        encoderDriveStrafe(-550,550,-550,550,1000);
                         encoderDrive(1000,1100,-1100);
                         encoderDrive(1000,-1050,1050);
-                        encoderDriveStrafe(550,-550,-550,550,1000);
+                        encoderDriveStrafe(550,-550,550,-550,1000);
                         sleep(500);
                     }
                     encoderDrive(1000,150,-150);
-                    encoderDriveStrafe(4500,-4500,-4500,4500,2500); //starting position
+                    encoderDriveStrafe(4500,-4500,4500,-4500,2500); //starting position
 
-                    encoderDriveStrafe(-300,300,300,-300,1000);
+                    encoderDriveStrafe(-300,300,-300,300,1000);
                     encoderDrive(1000,250,-250);
                     encoderDrive(1500,-1100,-1150);//this actually turns lolololol
                     int i = 0;
@@ -189,13 +196,13 @@ public class AutoBlueAudience extends LinearOpMode {
                     }
                     sleep(500);
                     telemetry.update();
-                    encoderDrive(2000,-2800,-2800);
+                    encoderDrive(2000,-2800,2800);
                     slideEncoder(1500,2000);
                     Wrist.setPosition(0.4);
-                    encoderDrive(600,-1000,1000);
+                    encoderDrive(600,-1000,-1000);
                     Claw.setPosition(0.65);
                     sleep(1000);
-                    encoderDriveStrafe(1000,-1000,-1000,1000,1500);
+                    encoderDriveStrafe(1000,-1000,1000,-1000,1500);
                     sleep(500);
                     sleep(500000000);
                 }

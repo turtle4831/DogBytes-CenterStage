@@ -104,6 +104,8 @@ public class AutoRedBoard extends LinearOpMode {
 
                 // Push telemetry to the Driver Station.
 
+                encoderDrive(1000,100,-100);
+                encoderDrive(1000,-100,100);
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
                 for (Recognition recognition : currentRecognitions) {

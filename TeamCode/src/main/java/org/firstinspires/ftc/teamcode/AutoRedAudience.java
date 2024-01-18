@@ -75,10 +75,12 @@ public class AutoRedAudience extends LinearOpMode {
         Claw = hardwareMap.get(Servo.class, "Claw");
 
         //set the motor direction
-        FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);//change to Forward
         BL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        FR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        BR_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        FR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);//change to Reverse
+        BR_Motor.setDirection(DcMotorSimple.Direction.FORWARD);
+
         L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
         R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -103,6 +105,8 @@ public class AutoRedAudience extends LinearOpMode {
 
 
                 // Push telemetry to the Driver Station.
+                    encoderDrive(1000,100,100);
+                    encoderDrive(1000,-100,-100);
 
                     telemetry.update();
                     List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -141,9 +145,9 @@ public class AutoRedAudience extends LinearOpMode {
                     if(id == 4){
                         //code for left
                         encoderDriveStrafe(550,-550,-550,550,1000);
-                        encoderDrive(1000,1100,-1100);
+                        encoderDrive(1000,1100,1100);
                         Intake.setPower(-0.3);
-                        encoderDrive(1000,-1050,1050);
+                        encoderDrive(1000,-1050,-1050);
                         Intake.setPower(0);
                         encoderDriveStrafe(-550,550,550,-550,1000);
 
@@ -170,11 +174,11 @@ public class AutoRedAudience extends LinearOpMode {
                         sleep(500);
 
                     }
-                    encoderDrive(1000,150,-150);
+                    encoderDrive(1000,150,150);
                     encoderDriveStrafe(-4500,4500,4500,-4500,2000);
                     encoderDriveStrafe(300,-300,-300,300,2500);
-                    encoderDrive(1000,250,-250);
-                    encoderDrive(700,1100,1100);//this actually turns lolololol
+                    encoderDrive(1000,250,250);
+                    encoderDrive(700,1100,-1100);//this actually turns lolololol
                     int i = 0;
                     while(notFound){
                         if(opModeIsActive()) {

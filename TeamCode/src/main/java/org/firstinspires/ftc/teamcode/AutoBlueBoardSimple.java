@@ -17,8 +17,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-@Autonomous(name = "BlueBoardPurplePark")
-public class AutoBlueBoard extends LinearOpMode {
+@Autonomous(name = "AutoBlueBoardSimplePurplePixelAndPark")
+public class AutoBlueBoardSimple extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     /**
@@ -100,7 +100,7 @@ public class AutoBlueBoard extends LinearOpMode {
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
-            Airplane.setPosition(0.3);
+            Airplane.setPosition(0.45);
             while (!isStopRequested() && opModeIsActive()) {
 
 
@@ -138,87 +138,50 @@ public class AutoBlueBoard extends LinearOpMode {
 
                 telemetry.update();
 
-                if(foundObj){
-                    myVisionPortal.setProcessorEnabled(tfod,false);
+                if(foundObj) {
+                    myVisionPortal.setProcessorEnabled(tfod, false);
                     Claw.setPosition(1);
-                    if(id == 1){
+                    if (id == 1) {
                         //code for left
-                        encoderDriveStrafe(-550,550,550,-550,1000);
-                        encoderDrive(1000,1100,1100);
+                        encoderDriveStrafe(-550, 550, 550, -550, 1000);
+                        encoderDrive(1000, 1100, 1100);
                         Intake.setPower(-0.3);
-                        encoderDrive(1000,-1050,-1050);
+                        encoderDrive(1000, -1050, -1050);
                         Intake.setPower(0);
-                        encoderDriveStrafe(550,-550,-550,550,1000);
+                        encoderDriveStrafe(550, -550, -550, 550, 1000);
 
 
-                    }else if(id == 2 ){
+                    } else if (id == 2) {
                         //code for middle
-                        encoderDrive(1500,1200,1200);//make all the right values the opposite
+                        encoderDrive(1500, 1200, 1200);//make all the right values the opposite
                         Intake.setPower(-0.3);
-                        encoderDrive(1500,-1200,-1200);
+                        encoderDrive(1500, -1200, -1200);
                         Intake.setPower(0);
 
 
-                    }else if(id == 3){
+                    } else if (id == 3) {
                         //code for right
-                        encoderDrive(1000,700,700); //goes forward 700 jahsdb
-                        encoderDrive(600,550,-550); //this actually turns to the left
-                        encoderDrive(1000,350,350); //also goes forward
+                        encoderDrive(1000, 700, 700); //goes forward 700 jahsdb
+                        encoderDrive(600, 550, -550); //this actually turns to the left
+                        encoderDrive(1000, 350, 350); //also goes forward
                         Intake.setPower(-0.3);
-                        encoderDrive(1000,-350,-350);
+                        encoderDrive(1000, -350, -350);
                         Intake.setPower(0);
-                        encoderDrive(600,-550,550);
-                        encoderDrive(1000,-700,-700);
+                        encoderDrive(600, -550, 550);
+                        encoderDrive(1000, -700, -700);
                         sleep(500);
 
                     }
-                    encoderDrive(1000,150,150);
-                    encoderDriveStrafe(-2500,2500,2500,-2500,2500);
-                    encoderDrive(1000,1000,-1000);//turns left
-                    encoderDrive(500,-500,-500); //drives back some
+                    encoderDrive(1000, 150, 150);
+                    encoderDriveStrafe(-2500, 2500, 2500, -2500, 2500);
+                    encoderDrive(1000, 1000, -1000);//turns left
+                    encoderDrive(500, -500, -500); //drives back some
 
-                    if(isStopRequested()){
+                    if (isStopRequested()) {
                         return;
                     }
-                    int i = 0;
-                    while(notFound){
-                        if(opModeIsActive()) {
-                            FL_Motor.setPower(-0.1);
-                            BL_Motor.setPower(0.1);
-                            FR_Motor.setPower(0.1);
-                            BR_Motor.setPower(-0.1);
-                            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-                            for (AprilTagDetection detection : currentDetections) {
-                                if (detection.metadata != null) {
-                                    if (detection.id == id) {
-                                        telemetry.addData("Found ", detection.id);
-                                        FL_Motor.setPower(0);
-                                        BL_Motor.setPower(0);
-                                        FR_Motor.setPower(0);
-                                        BR_Motor.setPower(0);
-                                        notFound = false;
-                                    }
-                                }
-                            }
-                            i++;
-                        }
-                    }
-                    if (isStopRequested()){
-                        return;
-                    }
-                    sleep(500);
-                    telemetry.update();
-                    encoderDrive(2000,-2800,2800);
-                    slideEncoder(1500,2000);
-                    Wrist.setPosition(0.4);
-                    encoderDrive(600,-1000,-1000);
-                    Claw.setPosition(0.65);
-                    sleep(1000);
-                    encoderDriveStrafe(-1000,1000,1000,-1000,1500);
-                    sleep(500);
-                    sleep(500000000);
                 }
-
+                sleep(50000000);
 
                 if (gamepad1.dpad_left) {
                     myVisionPortal.setProcessorEnabled(aprilTag, false);

@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "superdupercoolopmodethatlookssupercoolandhaslotsoffunctionality")
-public class Tele extends LinearOpMode {
+@TeleOp(name = "Super cool tele operatated opmode that is better than zl auto and sigma fortnite")
+public class AutoSorting extends LinearOpMode {
     //initiates all of the objects
     boolean Fullpower = false;
     public DcMotor FL_Motor;
@@ -138,46 +138,45 @@ public class Tele extends LinearOpMode {
 
 
 
-            double lift = gamepad2.right_trigger - gamepad2.left_trigger; //makes it so the slides take the sum of right and left trigger to give a power level
+            double lift = gamepad1.right_trigger - gamepad1.left_trigger; //makes it so the slides take the sum of right and left trigger to give a power level
             L_Slide.setPower(lift);
             R_Slide.setPower(lift);
 
 
             //code for the wrist
 
-            if(gamepad2.left_bumper){
+            if(gamepad1.left_bumper){
                 Wrist.setPosition(0.4); //wrist down half way
             }
 
-            if (gamepad2.right_bumper){
+            if (gamepad1.right_bumper){
                 Wrist.setPosition(0.1);//wrist goes in
             }
-            if (gamepad2.y){
+            if (gamepad1.y){
                 Claw.setPosition(0.65);
             }
-            if (gamepad2.x) {
+            if (gamepad1.x) {
                 Claw.setPosition(1);//claw closes
             }
 
-           //code for intake/conveyor
-            if(gamepad2.dpad_up) {
+            //code for intake/conveyor
+            if(gamepad1.dpad_up) {
                 Intake.setPower(1.0);
                 Rubber.setPower(0.55); //for testing when the locking is in change to 6
             }
-            if(gamepad2.dpad_down){
+            if(gamepad1.dpad_down){
                 Intake.setPower(0);
                 Rubber.setPower(0);
             }
-            if (gamepad2.dpad_left) {
+            if (gamepad1.dpad_left) {
                 Rubber.setPower(-0.6);
                 Intake.setPower(-0.4);
             }
 
 
-            if (gamepad2.b){ //airplane
-                Airplane.setPosition(0);
+            if (gamepad1.b){ //airplane
+                Airplane.setPosition(0.1);
             }
-
 
 
             /* mech lock hang
@@ -191,24 +190,12 @@ public class Tele extends LinearOpMode {
              */
 
 
-            if (gamepad2.a){
-                L_Slide.setPower(-0.45);
-                R_Slide.setPower(-0.45);
-                while(true){
-                    if(gamepad2.b){
-                        R_Slide.setPower(0);
-                        L_Slide.setPower(0);
-                        break;
-                    }else{
-                        sleep(10);
-                    }
-                }
-            }
 
 
 
 
-            
+
+
 
 
 //end of gamepad2
