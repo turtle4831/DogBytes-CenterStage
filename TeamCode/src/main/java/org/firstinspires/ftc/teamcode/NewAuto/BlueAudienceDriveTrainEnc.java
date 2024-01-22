@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.NewAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -25,6 +25,8 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
      * The variable to store our instance of the AprilTag processor.
      */
     private AprilTagProcessor aprilTag;
+
+    public ElapsedTime runtime = new ElapsedTime();
     double x;
     double height;
     double width;
@@ -95,31 +97,28 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
         BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         initDoubleVision();
+        telemetryTfod();
+        telemetry.update();
         waitForStart();
-
+        runtime.reset();
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
             Airplane.setPosition(0.3);
             while (!isStopRequested() && opModeIsActive()) {
 
-
-                // Push telemetry to the Driver Station.
-                encoderDrive(1000,100,100);
-                encoderDrive(1000,-100,-100);
-
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
-                for (Recognition recognition : currentRecognitions) {
-                    if ( recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490  && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
-                        this.x = (recognition.getLeft() + recognition.getRight()) / 2;
-                        this.width = recognition.getWidth();
-                        this.height = recognition.getHeight();
+
+                    for (Recognition recognition : currentRecognitions) {
+                        if (recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490 && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
+                            this.x = (recognition.getLeft() + recognition.getRight()) / 2;
+                            this.width = recognition.getWidth();
+                            this.height = recognition.getHeight();
+                        }
+
+
                     }
-
-
-                }
-
 
                 //for blue board side
                 if (x >= 100 && x <= 300 ) {//middle
@@ -145,32 +144,35 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
                     if(id == 1){
                         //code for left
                         encoderDrive(1000,700,700); //goes forward 700 jahsdb
-                        encoderDrive(600,-550,550); //this actually turns to the left
+                        encoderDrive(600,-650,650); //this actually turns to the left
                         encoderDrive(1000,350,350); //also goes forward
                         Intake.setPower(0.3);
                         encoderDrive(1000,-350,-350);
                         Intake.setPower(0);
-                        encoderDrive(600,550,-550);
+                        encoderDrive(600,660,-660);
                         encoderDrive(1000,-700,-700);
                         sleep(500);
 
                     }else if(id == 2){
                         //code for middle
                         encoderDrive(1500,1200,1200);        //make all the right values the opposite
+                        Intake.setPower(0.3);
                         encoderDrive(1500,-1200,-1200);
-
+                        Intake.setPower(0);
                         sleep(500);
                     }else if(id == 3){
                         //code for right
                         encoderDriveStrafe(550,-550,-550,550,1000);
                         encoderDrive(1000,1100,-1100);
+                        Intake.setPower(0.3);
                         encoderDrive(1000,-1050,1050);
+                        Intake.setPower(0);
                         encoderDriveStrafe(-550,550,550,-550,1000);
                         sleep(500);
 
 
                     }
-                    encoderDrive(500,-400,-400);
+
                     encoderDrive(1000,100,100);
                     encoderDriveStrafe(-4200,4200,4200,-4200,1500); //starting position
 
@@ -182,10 +184,10 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
                     int i = 0;
                     while(notFound){
                         if(opModeIsActive()) {
-                            FL_Motor.setPower(0.1);
-                            BL_Motor.setPower(-0.1);
-                            FR_Motor.setPower(-0.1);
-                            BR_Motor.setPower(0.1);
+                            FL_Motor.setPower(0.2);
+                            BL_Motor.setPower(-0.2);
+                            FR_Motor.setPower(-0.2);
+                            BR_Motor.setPower(0.2);
                             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                             for (AprilTagDetection detection : currentDetections) {
                                 if (detection.metadata != null) {
@@ -213,7 +215,7 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
                     L_Slide.setPower(0.6);
                     R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    sleep(1500);
+                    sleep(1900);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
                     encoderDrive(600,-700,-700);
@@ -224,7 +226,8 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
                     Claw.setPosition(1);
                     Wrist.setPosition(0.1);
                     sleep(1000);
-                    encoderDriveStrafe(1000,-1000,1000,-1000,1500);
+                    encoderDrive(1000,400,400);
+                    encoderDriveStrafe(1000,-1000,-1000,1000,1500);
                     sleep(500);
                     sleep(500000000);
                 }
@@ -272,7 +275,7 @@ public class BlueAudienceDriveTrainEnc extends LinearOpMode {
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
 
                 .setModelFileName(TFOD_MODEL_FILE)
-                //  .setModelAssetName(TFOD_MODEL_ASSET)
+                // .setModelAssetName(TFOD_MODEL_ASSET)
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
                 .setModelLabels(LABELS)

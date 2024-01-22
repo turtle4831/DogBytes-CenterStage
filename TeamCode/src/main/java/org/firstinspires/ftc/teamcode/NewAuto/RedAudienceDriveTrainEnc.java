@@ -17,19 +17,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-@Autonomous(name = "RedBoardDriveTrainEnc")
-public class RedBoardDriveTrainEnc extends LinearOpMode {
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
-    /**
-     * The variable to store our instance of the AprilTag processor.
-     */
-    private AprilTagProcessor aprilTag;
-    double x;
-    double height;
-    double width;
-    boolean foundObj = false;
-    boolean goLeft = false;
+@Autonomous(name = "RedAudienceDriveTrainEnc")
+public class RedAudienceDriveTrainEnc extends LinearOpMode {
+    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesBlueV3.tflite"; // blue
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
+    private static final String[] LABELS = { //these must be in training order
+            "RedTeam"
+            // "BlueTeamObj"
+    };
+    public ElapsedTime runtime = new ElapsedTime();
     public DcMotor FL_Motor;
     public DcMotor FR_Motor;
     public DcMotor BR_Motor;
@@ -39,31 +37,26 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
     public DcMotor Intake;
     public Servo Wrist;
     public Servo Claw;
-
     public Servo Airplane;
-
-    int id = 3;
+    double x;
+    double height;
+    double width;
+    boolean foundObj = false;
+    boolean goLeft = false;
+    int id = 4;
     boolean notFound = true;
-
-    public ElapsedTime runtime = new ElapsedTime();
-
-
+    /**
+     * The variable to store our instance of the AprilTag processor.
+     */
+    private AprilTagProcessor aprilTag;
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
      */
     private TfodProcessor tfod;
-
     /**
      * The variable to store our instance of the vision portal.
      */
     private VisionPortal myVisionPortal;
-    //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesBlueV3.tflite"; // blue
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/DogBytesSuperCoolModel.tflite";
-    private static final String[] LABELS = { //these must be in training order
-             "RedTeam"
-            //"BlueTeamObj"
-    };
-
 
     @Override
     public void runOpMode() {
@@ -71,12 +64,13 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
         FR_Motor = hardwareMap.get(DcMotor.class, "FR_Motor");
         BL_Motor = hardwareMap.get(DcMotor.class, "BL_Motor");
         BR_Motor = hardwareMap.get(DcMotor.class, "BR_Motor");
-        Intake = hardwareMap.get(DcMotor.class,"Intake");
-        L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
-        R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
+        L_Slide = hardwareMap.get(DcMotor.class, "L_Slide");
+        R_Slide = hardwareMap.get(DcMotor.class, "R_Slide");
         Airplane = hardwareMap.get(Servo.class, "Airplane");
         Wrist = hardwareMap.get(Servo.class, "Wrist");
         Claw = hardwareMap.get(Servo.class, "Claw");
+
 
         //set the motor direction
         FL_Motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -89,7 +83,6 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
         R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
-
         //resets the encoders and starts them again cause i can
         FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -98,39 +91,36 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
         initDoubleVision();
         telemetryTfod();
-
         telemetry.update();
         waitForStart();
-        runtime.reset();
-
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
-            Airplane.setPosition(0.3);
-            while (!isStopRequested() && opModeIsActive()) {
 
+            Airplane.setPosition(0.3);
+
+            while (!isStopRequested() && opModeIsActive()) {
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
-                    for (Recognition recognition : currentRecognitions) {
-                        if (recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490 && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
-                            this.x = (recognition.getLeft() + recognition.getRight()) / 2;
-                            this.width = recognition.getWidth();
-                            this.height = recognition.getHeight();
-                        }
-
-
+                for (Recognition recognition : currentRecognitions) {
+                    if (recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490 && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
+                        this.x = (recognition.getLeft() + recognition.getRight()) / 2;
+                        this.width = recognition.getWidth();
+                        this.height = recognition.getHeight();
                     }
 
 
+                }
+
 
                 //for blue board side
-                if (x >= 100 && x <= 300 ) {//middle
+                if (x >= 100 && x <= 300) {//middle
                     telemetry.addData("Going middle", x);
                     foundObj = true;
                     id = 5;
-                } else if (x >= 300 && x <= 480) {// right
+                } else if (x >= 350 && x <= 480) {// right
                     telemetry.addData("Going right", x);
                     foundObj = true;
                     id = 6;
@@ -143,52 +133,49 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
                 telemetry.update();
 
-                if(foundObj){
-                    myVisionPortal.setProcessorEnabled(tfod,false);
+                if (foundObj) {
+                    myVisionPortal.setProcessorEnabled(tfod, false);
                     Claw.setPosition(1);
-                    if(id == 4){
+                    if (id == 4) {
                         //code for left
-                        encoderDrive(1000,700,700); //goes forward 700 jahsdb
-                        encoderDrive(600,-550,550); //this actually turns to the left
-                        encoderDrive(1000,350,350); //also goes forward
+                        encoderDriveStrafe(-550, 550, 550, -550, 1000);
+                        encoderDrive(1000, 1100, 1100);
                         Intake.setPower(0.3);
-                        encoderDrive(1000,-350,-350);
+                        encoderDrive(1000, -1050, -1050);
                         Intake.setPower(0);
-                        encoderDrive(600,550,-550);
-                        encoderDrive(1000,-750,-750);
-                        sleep(500);
+                        encoderDriveStrafe(550, -550, -550, 550, 1000);
 
-                    }else if(id == 5){
+                    } else if (id == 5) {
                         //code for middle
-                        encoderDrive(1500,1200,1200);//make all the right values the opposite
+
+                        encoderDrive(1500, 1200, 1200);        //make all the right values the opposite
                         Intake.setPower(0.3);
-                        encoderDrive(1500,-1250,-1250);
+                        encoderDrive(1500, -1200, -1200);
                         Intake.setPower(0);
 
                         sleep(500);
-                    }else if(id == 6){
+                    } else if (id == 6) {
                         //code for right
-                        encoderDriveStrafe(550,-550,-550,550,1000);
-                        encoderDrive(1000,1100,1100);
-                        Intake.setPower(0.6);
-                        encoderDrive(1000,-1050,-1050);
+                        encoderDrive(1000, 700, 700);
+                        encoderDrive(600, 550, -550); //turns to the right
+                        encoderDrive(1000, 350, 350);
+                        Intake.setPower(0.3);
+                        encoderDrive(1000, -350, -350);
                         Intake.setPower(0);
-                        encoderDriveStrafe(-550,550,550,-550,1000);
-                        sleep(500);
+                        encoderDrive(600, -550, 550);
+                        encoderDrive(1000, -700, -700);
 
 
                     }
-
-                    encoderDrive(1000,100,100);
-                    encoderDriveStrafe(1450,-1450,-1450,1450,1500); //starting position strafe right for red 1500 speed
-
+                    encoderDrive(1000, 100, 100);
+                    encoderDriveStrafe(4200, -4200, -4200, 4200, 1500); //starting position
 
 
-                    encoderDrive(1500,1200,-1200);//this actually turns lolololol
-                    encoderDriveStrafe(300,-300,-300,300,400);
+                    encoderDrive(1500, 1200, -1200);//this actually turns lolololol
+                    encoderDriveStrafe(500, -500, -500, 500, 1000);
                     int i = 0;
-                    while(notFound){
-                        if(opModeIsActive()) {
+                    while (notFound) {
+                        if (opModeIsActive()) {
                             FL_Motor.setPower(-0.2);
                             BL_Motor.setPower(0.2);
                             FR_Motor.setPower(0.2);
@@ -214,30 +201,27 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                     BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     sleep(500);
-                    if (id == 6){encoderDriveStrafe(60,-60,-60,60,500);}
-                    //encoderDriveStrafe(-180,180,180,-180,700);
+                    if (id == 1) {
+                        encoderDriveStrafe(-220, 220, 220, -220, 700);
+                    }
                     telemetry.update();
-                    encoderDrive(1400,-2000,2000);
+                    encoderDrive(1400, -2000, 2000);
                     L_Slide.setPower(0.6);
                     R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    sleep(1500);
+                    sleep(1900);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
-                    encoderDrive(400,-770,-770);
-                    sleep(500);
+                    encoderDrive(600, -650, -650);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
                     Claw.setPosition(0.4);
                     sleep(500);
                     Claw.setPosition(1);
                     Wrist.setPosition(0.1);
-                    L_Slide.setPower(-0.3);
-                    R_Slide.setPower(-0.3);
-                    encoderDrive(600,300,300);
-                    encoderDriveStrafe(900,-900,-900,900,1500);
-                    L_Slide.setPower(0);
-                    R_Slide.setPower(0);
+                    sleep(1000);
+                    encoderDrive(1000, 300, 300);
+                    encoderDriveStrafe(-1000, 1000, 1000, -1000, 1500);
                     sleep(500);
                     sleep(500000000);
                 }
@@ -251,7 +235,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                 if (gamepad1.dpad_down) {
                     myVisionPortal.setProcessorEnabled(tfod, false);
                 } else if (gamepad1.dpad_up) {
-                    myVisionPortal.setProcessorEnabled(tfod, true); // your gay
+                    myVisionPortal.setProcessorEnabled(tfod, true);
                 }
 
                 sleep(20);
@@ -292,7 +276,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                 .setIsModelTensorFlow2(true)
                 .setIsModelQuantized(true)
                 //.setModelInputSize(300)
-                .setModelAspectRatio(16/9)
+                .setModelAspectRatio(16 / 9)
 
                 .build();
 
@@ -344,10 +328,10 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-            telemetry.addData(""," ");
+            telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
@@ -368,7 +352,6 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
             BR_Motor.setTargetPosition(rightTicks);
 
 
-
             // Turn On RUN_TO_POSITION
             FL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL_Motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -377,12 +360,12 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
             // reset the timeout time and start motion.
             //   runtime.reset();
 
-            ((DcMotorEx)FL_Motor).setVelocity(speed);
-            ((DcMotorEx)FR_Motor).setVelocity(speed);
-            ((DcMotorEx)BL_Motor).setVelocity(speed);
-            ((DcMotorEx)BR_Motor).setVelocity(speed);
+            ((DcMotorEx) FL_Motor).setVelocity(speed);
+            ((DcMotorEx) FR_Motor).setVelocity(speed);
+            ((DcMotorEx) BL_Motor).setVelocity(speed);
+            ((DcMotorEx) BR_Motor).setVelocity(speed);
 
-            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+            while (FR_Motor.isBusy() && FL_Motor.isBusy()) {
                 telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
                 telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
                 telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
@@ -408,7 +391,8 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
         }
     }
-    public void encoderDriveStrafe(int FrontLeft,int BackLeft,int FrontRight,int BackRight,int speed) {
+
+    public void encoderDriveStrafe(int FrontLeft, int BackLeft, int FrontRight, int BackRight, int speed) {
         if (opModeIsActive()) {
 
 
@@ -431,7 +415,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
             ((DcMotorEx) BL_Motor).setVelocity(speed);
             ((DcMotorEx) BR_Motor).setVelocity(speed);
 
-            while(FR_Motor.isBusy() && FL_Motor.isBusy()) {
+            while (FR_Motor.isBusy() && FL_Motor.isBusy()) {
                 telemetry.addData("FL pos", FL_Motor.getCurrentPosition());
                 telemetry.addData("FR pos", FR_Motor.getCurrentPosition());
                 telemetry.addData("BL pos", BL_Motor.getCurrentPosition());
@@ -457,7 +441,8 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
         }
     }
-    public void slideEncoder(int speed, int distanceInTicks){
+
+    public void slideEncoder(int speed, int distanceInTicks) {
         if (opModeIsActive()) {
 
 
@@ -476,8 +461,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
             ((DcMotorEx) R_Slide).setVelocity(speed);
 
 
-
-            while(R_Slide.isBusy() && L_Slide.isBusy()) {
+            while (R_Slide.isBusy() && L_Slide.isBusy()) {
                 telemetry.addData("Left Slide pos", L_Slide.getCurrentPosition());
                 telemetry.addData("Right Slide pos", R_Slide.getCurrentPosition());
 
@@ -489,7 +473,6 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
             // Turn off RUN_TO_POSITION
             L_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             R_Slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
 
             sleep(250);   // optional pause after each move.

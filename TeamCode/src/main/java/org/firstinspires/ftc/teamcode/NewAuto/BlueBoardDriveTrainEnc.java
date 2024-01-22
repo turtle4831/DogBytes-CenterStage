@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.NewAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -40,6 +40,7 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
     public Servo Wrist;
     public Servo Claw;
 
+    public ElapsedTime runtime = new ElapsedTime();
     public Servo Airplane;
 
     int id = 3;
@@ -87,7 +88,6 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
         R_Slide.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
-
         //resets the encoders and starts them again cause i can
         FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -96,8 +96,10 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
 
         initDoubleVision();
         telemetryTfod();
-        waitForStart();
+        telemetry.update();
 
+        waitForStart();
+        runtime.reset();
         // This OpMode loops continuously, allowing the user to switch between
         // AprilTag and TensorFlow Object Detection (TFOD) image processors.
         if (opModeIsActive()) {
@@ -107,24 +109,19 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
 
 
                 // Push telemetry to the Driver Station.
-                encoderDrive(1000,100,100);
-                encoderDrive(1000,-100,-100);
 
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
                 for (Recognition recognition : currentRecognitions) {
-                    if ( recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490  && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
+                    if (recognition.getWidth() < 200 && recognition.getHeight() < 200 && recognition.getWidth() > 100 && recognition.getHeight() > 100 && (recognition.getLeft() + recognition.getRight()) / 2 < 490 && (recognition.getLeft() + recognition.getRight()) / 2 > 100) {
                         this.x = (recognition.getLeft() + recognition.getRight()) / 2;
                         this.width = recognition.getWidth();
                         this.height = recognition.getHeight();
                     }
 
-
                 }
-
-
                 //for blue board side
-                if (x >= 100 && x <= 300 ) {//middle
+                if (x >= 100 && x <= 300) {//middle
                     telemetry.addData("Going middle", x);
                     foundObj = true;
                     id = 2;
@@ -144,14 +141,14 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                 if(foundObj){
                     myVisionPortal.setProcessorEnabled(tfod,false);
                     Claw.setPosition(1);
-                    if(id == 1){
+                    if(id == 1) {
                         //code for left
-                        encoderDriveStrafe(550,-550,-550,550,1000);
-                        encoderDrive(1000,1100,-1100);
+                        encoderDriveStrafe(-550, 550, 550, -550, 1000);
+                        encoderDrive(1000, 1100, 1100);
                         Intake.setPower(0.3);
-                        encoderDrive(1000,-1050,1050);
-                        Intake.setPower(0.3);
-                        encoderDriveStrafe(-550,550,550,-550,1000);
+                        encoderDrive(1000, -1050, -1050);
+                        Intake.setPower(0);
+                        encoderDriveStrafe(550, -550, -550, 550, 1000);
 
                     }else if(id == 2){
                         //code for middle
@@ -182,7 +179,6 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
 
 
                     encoderDrive(1500,-1200,1200);//this actually turns lolololol
-                    sleep(1000);
                     encoderDriveStrafe(-500,500,500,-500,1000);
                     int i = 0;
                     while(notFound){
@@ -212,16 +208,18 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                     BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     BR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     sleep(500);
-                    encoderDriveStrafe(250,-250,-250,250,700);
+                    if (id == 1) {
+                        encoderDriveStrafe(220, -220, -220, 220, 700);
+                    }
                     telemetry.update();
-                    encoderDrive(1400,-2000,2000);
+                    encoderDrive(1400, -2000, 2000);
                     L_Slide.setPower(0.6);
                     R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    sleep(1500);
+                    sleep(1900);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
-                    encoderDrive(600,-700,-700);
+                    encoderDrive(600, -700, -700);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
                     Claw.setPosition(0.4);
@@ -229,7 +227,8 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                     Claw.setPosition(1);
                     Wrist.setPosition(0.1);
                     sleep(1000);
-                    encoderDriveStrafe(1000,-1000,1000,-1000,1500);
+                    encoderDrive(1000, 400, 400);
+                    encoderDriveStrafe(-1000, 1000, 1000, -1000, 1500);
                     sleep(500);
                     sleep(500000000);
                 }

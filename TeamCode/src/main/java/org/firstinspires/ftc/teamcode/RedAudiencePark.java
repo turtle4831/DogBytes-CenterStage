@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,7 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 
-@Autonomous(name="RedAudiencePark")
+//@Autonomous(name="RedAudiencePark")
+@Disabled
 public class RedAudiencePark extends LinearOpMode {
     static String direction;
     public DcMotor FL_Motor;
