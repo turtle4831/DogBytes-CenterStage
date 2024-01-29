@@ -6,10 +6,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "FieldCentricDrive test")
-public class fieldcentricdrivetest extends LinearOpMode {
+@TeleOp(name = "FieldCentricDrive Tele-op")
+public class TeleFieldCentric extends LinearOpMode {
+    public DcMotor Intake;
+    public DcMotor L_Slide;
+    public DcMotor R_Slide;
+    public DcMotor Rubber;
+    public Servo Airplane;
+    public Servo Wrist;
+    public Servo Claw;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -18,6 +29,23 @@ public class fieldcentricdrivetest extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("BL_Motor");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("FR_Motor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("BR_Motor");
+
+
+        Intake = hardwareMap.get(DcMotor.class,"Intake");
+        L_Slide =hardwareMap.get(DcMotor.class, "L_Slide");
+        R_Slide = hardwareMap.get(DcMotor.class,"R_Slide");
+        Rubber = hardwareMap.get(DcMotor.class,"Rubber");
+
+        Airplane = hardwareMap.get(Servo.class, "Airplane");
+        Wrist = hardwareMap.get(Servo.class, "Wrist");
+        Claw = hardwareMap.get(Servo.class, "Claw");
+
+        L_Slide.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -38,11 +66,11 @@ public class fieldcentricdrivetest extends LinearOpMode {
         imu.initialize(parameters);
 
         waitForStart();
-
+        Airplane.setPosition(0.45);
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
@@ -74,6 +102,60 @@ public class fieldcentricdrivetest extends LinearOpMode {
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+
+
+            double lift = gamepad2.right_trigger - gamepad2.left_trigger; //makes it so the slides take the sum of right and left trigger to give a power level
+            L_Slide.setPower(lift);
+            R_Slide.setPower(lift);
+
+
+            //code for the wrist
+
+            if(gamepad2.left_bumper){
+                Wrist.setPosition(0.4); //wrist down half way
+            }
+
+            if (gamepad2.right_bumper){
+                Wrist.setPosition(0.15);//wrist goes in
+            }
+            if (gamepad2.y){
+                Claw.setPosition(0.65);
+            }
+            if (gamepad2.x) {
+                Claw.setPosition(1);//claw closes
+            }
+
+            //code for intake/conveyor
+            if(gamepad2.dpad_up) {
+                Intake.setPower(1.0);
+                Rubber.setPower(0.55); //for testing when the locking is in change to 6
+            }
+            if(gamepad2.dpad_down){
+                Intake.setPower(0);
+                Rubber.setPower(0);
+            }
+            if (gamepad2.dpad_left) {
+                Rubber.setPower(-0.6);
+                Intake.setPower(-0.4);
+            }
+
+
+            if (gamepad2.b){ //airplane
+                Airplane.setPosition(0);
+            }
+            if (gamepad2.a){
+                L_Slide.setPower(-0.45);
+                R_Slide.setPower(-0.45);
+                while(true){
+                    if(gamepad2.b){
+                        R_Slide.setPower(0);
+                        L_Slide.setPower(0);
+                        break;
+                    }else{
+                        sleep(10);
+                    }
+                }
+            }
         }
     }
 }

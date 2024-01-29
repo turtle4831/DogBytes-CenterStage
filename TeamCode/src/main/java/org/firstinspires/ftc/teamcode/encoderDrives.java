@@ -3,14 +3,15 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import java.nio.channels.FileLock;
-
-@Autonomous(name = "AutoTestGeorge")
+@Disabled
+//@Autonomous(name = "AutoTestGeorge")
 public class encoderDrives extends LinearOpMode {
 
     public  DcMotor LeftDead;

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.annotation.SuppressLint;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,8 +19,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-
-@TeleOp(name = "Shake-Test")//this is for red audience
+@Disabled
+//@tele_op(name = "Shake-Test")//this is for red audience
 public class DetectionShake extends LinearOpMode {
     public DcMotor FL_Motor;
     public DcMotor FR_Motor;

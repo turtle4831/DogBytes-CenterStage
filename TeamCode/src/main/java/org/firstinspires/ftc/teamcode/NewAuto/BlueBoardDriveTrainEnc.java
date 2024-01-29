@@ -173,7 +173,7 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
 
 
                     }
-                    encoderDrive(1000,100,100);
+                    encoderDrive(300,110,110);
                     encoderDriveStrafe(-1450,1450,1450,-1450,1500); //starting position
 
 
@@ -181,6 +181,7 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                     encoderDrive(1500,-1200,1200);//this actually turns lolololol
                     encoderDriveStrafe(-500,500,500,-500,1000);
                     int i = 0;
+                    /*
                     while(notFound){
                         if(opModeIsActive()) {
                             FL_Motor.setPower(0.2);
@@ -203,6 +204,8 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                             i++;
                         }
                     }
+                    */
+                    /*
                     FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -216,7 +219,7 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                     L_Slide.setPower(0.6);
                     R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    sleep(1900);
+                    sleep(2100);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
                     encoderDrive(600, -700, -700);
@@ -230,6 +233,9 @@ public class BlueBoardDriveTrainEnc extends LinearOpMode {
                     encoderDrive(1000, 400, 400);
                     encoderDriveStrafe(-1000, 1000, 1000, -1000, 1500);
                     sleep(500);
+
+                     */
+
                     sleep(500000000);
                 }
 

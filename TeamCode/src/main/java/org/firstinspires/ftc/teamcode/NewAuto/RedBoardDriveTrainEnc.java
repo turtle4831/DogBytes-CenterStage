@@ -108,8 +108,6 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
         if (opModeIsActive()) {
             Airplane.setPosition(0.3);
             while (!isStopRequested() && opModeIsActive()) {
-
-
                 // Push telemetry to the Driver Station.
                 telemetry.update();
                 List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -120,10 +118,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                             this.height = recognition.getHeight();
                         }
 
-
                     }
-
-
 
                 //for blue board side
                 if (x >= 100 && x <= 300 ) {//middle
@@ -179,20 +174,22 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
 
                     }
 
-                    encoderDrive(1000,100,100);
+                    encoderDrive(300,110,110);
                     encoderDriveStrafe(1450,-1450,-1450,1450,1500); //starting position strafe right for red 1500 speed
 
 
 
                     encoderDrive(1500,1200,-1200);//this actually turns lolololol
                     encoderDriveStrafe(300,-300,-300,300,400);
+
                     int i = 0;
+                    /*
                     while(notFound){
                         if(opModeIsActive()) {
-                            FL_Motor.setPower(-0.2);
-                            BL_Motor.setPower(0.2);
-                            FR_Motor.setPower(0.2);
-                            BR_Motor.setPower(-0.2);
+                            FL_Motor.setPower(-0.1);
+                            BL_Motor.setPower(0.1);
+                            FR_Motor.setPower(0.1);
+                            BR_Motor.setPower(-0.1);
                             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
                             for (AprilTagDetection detection : currentDetections) {
                                 if (detection.metadata != null) {
@@ -209,6 +206,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                             i++;
                         }
                     }
+                    */
                     FL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     FR_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     BL_Motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -221,7 +219,7 @@ public class RedBoardDriveTrainEnc extends LinearOpMode {
                     L_Slide.setPower(0.6);
                     R_Slide.setPower(0.6);
                     Wrist.setPosition(0.4);
-                    sleep(1500);
+                    sleep(2100);
                     L_Slide.setPower(0);
                     R_Slide.setPower(0);
                     encoderDrive(400,-770,-770);
